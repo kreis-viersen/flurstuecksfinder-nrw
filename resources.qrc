@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/plugins/flurstuecks_finder_nrw" >
+        <file>icons/finder.png</file>
+		<file>icons/suchen.png</file>
+		<file>icons/add.png</file>
+		<file>icons/remove.png</file>
+		<file>icons/josm.png</file>
+		<file>icons/web.png</file>
+		<file>icons/click.png</file>
+		<file>icons/ideditor.png</file>
+		<file>icons/info.png</file>
+		<file>icons/settings.png</file>
+    </qresource>
+</RCC>

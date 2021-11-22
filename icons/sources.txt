@@ -1,0 +1,10 @@
+add : https://publicdomainvectors.org/en/free-clipart/Add-button/59482.html
+remove : https://publicdomainvectors.org/en/free-clipart/Red-remove-button/59481.html
+suchen : https://commons.wikimedia.org/wiki/File:Magnifying_glass_icon.svg
+web : https://publicdomainvectors.org/en/free-clipart/Vector-image-of-internet-web-browser-icon/31567.html
+finder : https://publicdomainvectors.org/en/free-clipart/Map-location-icon-vector-image/13647.html
+josm : https://josm.openstreetmap.de/logo.png
+ideditor: https://en.m.wikipedia.org/wiki/File:OpenStreetMap-Editor_iD_Logo.svg
+click: https://publicdomainvectors.org/en/free-clipart/Black-target/36668.html
+info: https://de.m.wikipedia.org/wiki/Datei:Info_icon-72a7cf.svg
+settings: https://commons.wikimedia.org/wiki/File:Tools.svg
