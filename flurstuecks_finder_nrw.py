@@ -1346,7 +1346,7 @@ class FlurstuecksFinderNRW:
         url_md5 = 'https://kreis-viersen.github.io/katasteraemter-gemarkungen-fluren-nrw/data/katasteraemter-gemarkungen-fluren-nrw.json.md5'
         url_json = 'https://kreis-viersen.github.io/katasteraemter-gemarkungen-fluren-nrw/data/katasteraemter-gemarkungen-fluren-nrw.json'
         masterfile = os.path.join(self.cache_dir, 'katasteraemter-gemarkungen-fluren-nrw.json')
-        response_md5 = requests.get(url_md5)
+        response_md5 = requests.get(url_md5, proxies=proxies)
         hash_md5 = None
         hash_json = None
         if response_md5.status_code == 200:
@@ -1355,7 +1355,7 @@ class FlurstuecksFinderNRW:
                 with open(masterfile,'rb') as file:
                     hash_json = hashlib.md5(file.read()).hexdigest()
             if not os.path.isfile(masterfile) or (hash_json != hash_md5):
-                response_json = requests.get(url_json)
+                response_json = requests.get(url_json, proxies=proxies)
                 with open(masterfile, 'wb') as json_file:
                     json_file.write(response_json.content)
                 self.PushMessage(message='Daten vom Flurstücksfinder NRW aktualisiert.', level=Qgis.Info)
