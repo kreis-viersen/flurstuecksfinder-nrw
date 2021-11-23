@@ -587,7 +587,7 @@ class FlurstuecksFinderNRW:
                     param['propertyname'] = 'FLSTNRZAE,FLSTNRNEN,FLSTKENNZ'
                 else:
                     param['typename'] = 'ave:FlurstueckPunkt'
-                    # param['propertyname'] = 'ave:flstnrzae,ave:flstnrnen,ave:flstkennz'
+                    param['propertyname'] = 'ave:flstnrnen'
                 flur_id = None
                 gem_nr = kwargs["gem_id"]
                 flur_nr = kwargs["flur_nr"]
