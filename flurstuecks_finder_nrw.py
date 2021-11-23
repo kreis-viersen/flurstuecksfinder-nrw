@@ -1343,8 +1343,8 @@ class FlurstuecksFinderNRW:
     def CheckCache(self):
         """ Checks if an internet connection is available and if the github file
         has been changed  """
-        url_md5 = 'https://raw.githubusercontent.com/kreis-viersen/katasteraemter-gemarkungen-fluren-nrw/main/data/katasteraemter-gemarkungen-fluren-nrw.json.md5'
-        url_json = 'https://raw.githubusercontent.com/kreis-viersen/katasteraemter-gemarkungen-fluren-nrw/main/data/katasteraemter-gemarkungen-fluren-nrw.json'
+        url_md5 = 'https://kreis-viersen.github.io/katasteraemter-gemarkungen-fluren-nrw/data/katasteraemter-gemarkungen-fluren-nrw.json.md5'
+        url_json = 'https://kreis-viersen.github.io/katasteraemter-gemarkungen-fluren-nrw/data/katasteraemter-gemarkungen-fluren-nrw.json'
         masterfile = os.path.join(self.cache_dir, 'katasteraemter-gemarkungen-fluren-nrw.json')
         response_md5 = requests.get(url_md5)
         hash_md5 = None
