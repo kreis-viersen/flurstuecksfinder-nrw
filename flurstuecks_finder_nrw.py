@@ -281,7 +281,7 @@ class FlurstuecksFinderNRW:
         self.dockwidget.cmb_gemarkung_name.currentIndexChanged.connect(
             lambda: self.dockwidget.cmb_gemarkung_id.setCurrentIndex(
                 self.dockwidget.cmb_gemarkung_id.findText(
-                    self.dockwidget.cmb_gemarkung_name.currentText().split(" (")[1].split(")")[0],
+                    re.sub("[^0-9]", "", self.dockwidget.cmb_gemarkung_name.currentText()),
                     Qt.MatchFixedString)))
         self.dockwidget.cmb_gemarkung_id.currentIndexChanged.connect(
             lambda: self.dockwidget.cmb_gemarkung_name.setCurrentIndex(
