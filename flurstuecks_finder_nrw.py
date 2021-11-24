@@ -769,7 +769,7 @@ class FlurstuecksFinderNRW:
         if self.katasteramt and self.katasterdaten:
             gemarkungen = self.katasterdaten.get(self.katasteramt.replace("Stadt ", ""))
             gemarkungen_name = gemarkungen.keys()
-            gemarkungen_ids = [i.get('schluessel') for i in gemarkungen.values()]
+            gemarkungen_ids = sorted([i.get('schluessel') for i in gemarkungen.values()])
             self.dockwidget.cmb_gemarkung_name.blockSignals(True)
             self.dockwidget.cmb_gemarkung_id.blockSignals(True)
             self.dockwidget.cmb_gemarkung_name.addItems(gemarkungen_name)
