@@ -272,12 +272,16 @@ class FlurstuecksFinderNRW:
         # Actions that will be executed when the index of the
         # comboboxes changes (comparison of the name of the
         # Gemarkungsname with the Gemarkungs-Schlüssel )
-        self.dockwidget.cmb_gemarkung_id.currentIndexChanged.connect(
-            lambda: self.dockwidget.cmb_gemarkung_name.setCurrentIndex(
-                self.dockwidget.cmb_gemarkung_id.currentIndex()))
         self.dockwidget.cmb_gemarkung_name.currentIndexChanged.connect(
             lambda: self.dockwidget.cmb_gemarkung_id.setCurrentIndex(
-                self.dockwidget.cmb_gemarkung_name.currentIndex()))
+                self.dockwidget.cmb_gemarkung_id.findText(
+                    re.sub("[^0-9]", "", self.dockwidget.cmb_gemarkung_name.currentText()),
+                    Qt.MatchFixedString)))
+        self.dockwidget.cmb_gemarkung_id.currentIndexChanged.connect(
+            lambda: self.dockwidget.cmb_gemarkung_name.setCurrentIndex(
+                self.dockwidget.cmb_gemarkung_name.findText(
+                    self.dockwidget.cmb_gemarkung_id.currentText(),
+                    Qt.MatchContains)))
         # Actions when the combo boxes are clicked/activated
         # When Gemarkung is activated, the combo box for fluren is filled.
         self.dockwidget.cmb_katasteramt.currentIndexChanged.connect(self.SetKatasteramt)
@@ -769,7 +773,7 @@ class FlurstuecksFinderNRW:
         if self.katasteramt and self.katasterdaten:
             gemarkungen = self.katasterdaten.get(self.katasteramt.replace("Stadt ", ""))
             gemarkungen_name = gemarkungen.keys()
-            gemarkungen_ids = [i.get('schluessel') for i in gemarkungen.values()]
+            gemarkungen_ids = sorted([i.get('schluessel') for i in gemarkungen.values()])
             self.dockwidget.cmb_gemarkung_name.blockSignals(True)
             self.dockwidget.cmb_gemarkung_id.blockSignals(True)
             self.dockwidget.cmb_gemarkung_name.addItems(gemarkungen_name)
