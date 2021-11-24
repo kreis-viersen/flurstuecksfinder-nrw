@@ -272,12 +272,22 @@ class FlurstuecksFinderNRW:
         # Actions that will be executed when the index of the
         # comboboxes changes (comparison of the name of the
         # Gemarkungsname with the Gemarkungs-Schlüssel )
-        self.dockwidget.cmb_gemarkung_id.currentIndexChanged.connect(
-            lambda: self.dockwidget.cmb_gemarkung_name.setCurrentIndex(
-                self.dockwidget.cmb_gemarkung_id.currentIndex()))
+        # self.dockwidget.cmb_gemarkung_id.currentIndexChanged.connect(
+        #     lambda: self.dockwidget.cmb_gemarkung_name.setCurrentIndex(
+        #         self.dockwidget.cmb_gemarkung_id.currentIndex()))
+        # self.dockwidget.cmb_gemarkung_name.currentIndexChanged.connect(
+        #     lambda: self.dockwidget.cmb_gemarkung_id.setCurrentIndex(
+        #         self.dockwidget.cmb_gemarkung_name.currentIndex()))
         self.dockwidget.cmb_gemarkung_name.currentIndexChanged.connect(
             lambda: self.dockwidget.cmb_gemarkung_id.setCurrentIndex(
-                self.dockwidget.cmb_gemarkung_name.currentIndex()))
+                self.dockwidget.cmb_gemarkung_id.findText(
+                    self.dockwidget.cmb_gemarkung_name.currentText().split(" (")[1].split(")")[0],
+                    Qt.MatchFixedString)))
+        self.dockwidget.cmb_gemarkung_id.currentIndexChanged.connect(
+            lambda: self.dockwidget.cmb_gemarkung_name.setCurrentIndex(
+                self.dockwidget.cmb_gemarkung_name.findText(
+                    self.dockwidget.cmb_gemarkung_id.currentText(), 
+                    Qt.MatchContains)))
         # Actions when the combo boxes are clicked/activated
         # When Gemarkung is activated, the combo box for fluren is filled.
         self.dockwidget.cmb_katasteramt.currentIndexChanged.connect(self.SetKatasteramt)
