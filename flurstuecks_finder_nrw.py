@@ -1335,7 +1335,8 @@ class FlurstuecksFinderNRW:
                     url = 'https://www.tim-online.nrw.de/tim-online2/?'
                     param = {'bg': 'alkis',
                              'center': f'{x},{y}',
-                             'icon': 'true'
+                             'icon': 'true',
+                             'scale': int(self.canvas.scale())
                              }
                 url = url + urllib.parse.unquote_plus(urllib.parse.urlencode(param))
                 webbrowser.open_new_tab(url)
