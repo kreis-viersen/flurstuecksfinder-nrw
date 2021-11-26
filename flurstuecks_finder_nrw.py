@@ -1333,7 +1333,7 @@ class FlurstuecksFinderNRW:
                         }
                 else:
                     url = 'https://www.tim-online.nrw.de/tim-online2/?'
-                    param = {'bg': 'webatlas',
+                    param = {'bg': 'alkis',
                              'center': f'{x},{y}',
                              'icon': 'true'
                              }
