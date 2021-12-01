@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--part of the rodentia icon theme by sixsixfive released under CC0 (https://creativecommons.org/publicdomain/zero/1.0/) on openclipart-->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 48 48">
+ <defs id="0">
+  <linearGradient id="2">
+   <stop id="9" stop-color="#fff" stop-opacity="0.8"/>
+   <stop id="A" offset="1" stop-color="#fff" stop-opacity="0"/>
+  </linearGradient>
+  <linearGradient id="3">
+   <stop id="B" stop-color="#2e3436"/>
+   <stop id="C" offset="1" stop-color="#2e3436" stop-opacity="0"/>
+  </linearGradient>
+  <linearGradient id="4">
+   <stop id="D" stop-color="#fff"/>
+   <stop id="E" offset="1" stop-color="#fff" stop-opacity="0"/>
+  </linearGradient>
+  <linearGradient y1="1021.03" x2="0" y2="1033.97" id="5" xlink:href="#2" gradientUnits="userSpaceOnUse"/>
+  <linearGradient x1="11.305" y1="-20.36" x2="26.879" y2="31.712" id="6" xlink:href="#4" gradientUnits="userSpaceOnUse" gradientTransform="translate(4.2663575e-7,1003.4432)"/>
+  <radialGradient cx="32.977" cy="45.744" r="19.84" id="7" xlink:href="#3" gradientUnits="userSpaceOnUse" gradientTransform="matrix(1,0,0,0.05351171,0,43.29616)"/>
+ </defs>
+ <g transform="translate(0,-1004.3622)" id="1">
+  <g id="8">
+   <path d="m 52.816938,45.743999 a 19.839529,1.0616471 0 1 1 -39.679058,0 19.839529,1.0616471 0 1 1 39.679058,0 z" transform="matrix(1.2019942,0,0,1.8125,-15.638655,951.94597)" id="F" opacity="0.8" fill="url(#7)"/>
+   <path d="m 3.0000004,1019.9432 0,15 41.9999996,0 0,-15 -41.9999996,0 z" id="G" fill="#7c0000"/>
+   <path d="m 4.0000004,1020.9432 0,13 39.9999996,0 0,-13 -39.9999996,0 z" id="H" fill="#c00"/>
+   <path d="m 4.53125,1021.5312 0,11.9376 38.9375,0 0,-11.9376 -38.9375,0 z" id="I" fill="none" stroke="url(#5)"/>
+   <path d="m 4.0000004,1020.9432 0,13 C 17.273072,1026.7996 30.530352,1022.5876 44,1021.0682 l 0,-0.125 -39.9999996,0 z" id="J" opacity="0.6" fill="url(#6)"/>
+  </g>
+ </g>
+</svg>
