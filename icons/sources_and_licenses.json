@@ -1,0 +1,42 @@
+{
+  "add": {
+    "source": "https://publicdomainvectors.org/en/free-clipart/Add-button/59482.html",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/deed.en"
+  },
+  "click": {
+    "source": "https://publicdomainvectors.org/en/free-clipart/Black-target/36668.html",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/deed.en"
+  },
+  "finder": {
+    "source": "https://publicdomainvectors.org/en/free-clipart/Map-location-icon-vector-image/13647.html",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/deed.en"
+  },
+  "ideditor": {
+    "source": "https://en.m.wikipedia.org/wiki/File:OpenStreetMap-Editor_iD_Logo.svg",
+    "license": "ISC License\n\nCopyright (c) 2017, iD Contributors\n\nPermission to use, copy, modify, and/or distribute this software for any\npurpose with or without fee is hereby granted, provided that the above\ncopyright notice and this permission notice appear in all copies.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH\nREGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY\nAND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,\nINDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM\nLOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE\nOR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR\nPERFORMANCE OF THIS SOFTWARE."
+  },
+  "info": {
+    "source": "https://de.m.wikipedia.org/wiki/Datei:Info_icon-72a7cf.svg",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/deed.en"
+  },
+  "josm": {
+    "source": "https://commons.wikimedia.org/wiki/File:JOSM_Logotype_2019.svg",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/deed.en"
+  },
+  "remove": {
+    "source": "https://publicdomainvectors.org/en/free-clipart/Red-remove-button/59481.html",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/deed.en"
+  },
+  "search": {
+    "source": "https://commons.wikimedia.org/wiki/File:Magnifying_glass_icon.svg",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/deed.en"
+  },
+  "settings": {
+    "source": "https://commons.wikimedia.org/wiki/File:Tools.svg",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/deed.en"
+  },
+  "web": {
+    "source": "https://publicdomainvectors.org/en/free-clipart/Vector-image-of-internet-web-browser-icon/31567.html",
+    "license": "https://creativecommons.org/publicdomain/zero/1.0/deed.en"
+  }
+}
