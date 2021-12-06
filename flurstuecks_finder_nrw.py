@@ -73,7 +73,6 @@ from .start_josm import *
 qgis_version = Qgis.QGIS_VERSION.split("-")[0]
 # For future releases to catch version differences
 # QgsMessageLog.logMessage('Nachricht', 'Flurstücksfinder NRW', level=Qgis.Info)
-# Potentially proxy config
 
 # ---------------------------------------------------------------------------- #
 # Class to initialize the plugin GUIs                                          #
