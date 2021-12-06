@@ -121,9 +121,11 @@ class StartJosm(object):
             #     pass
 
             try:
+                proxy_handler = urllib.request.ProxyHandler({})
+                opener = urllib.request.build_opener(proxy_handler)
                 url = f'http://localhost:8111/load_and_zoom?left={xmin}&right={xmax}&bottom={ymin}&top={ymax}'
-                request = urllib.request.Request(url)
-                result_request = urllib.request.urlopen(request, timeout=3)
+                request = opener.open(url)
+                result_request = opener.open(url, timeout=3)
                 result = result_request.read()
                 result = result.decode('utf8')
             except IOError:
