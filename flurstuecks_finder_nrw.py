@@ -32,12 +32,13 @@ import re
 from collections import OrderedDict
 import hashlib
 import urllib
-import requests
+from io import BytesIO
 from lxml import etree
 
-from qgis.PyQt.QtCore import QCoreApplication, Qt, pyqtSignal, QSettings, QSize
+from qgis.PyQt.QtCore import QCoreApplication, Qt, pyqtSignal, QSettings, QSize, QUrl
 from qgis.PyQt import uic
 from qgis.PyQt.QtGui import QIcon, QColor, QFont, QPixmap
+from qgis.PyQt.QtNetwork import QNetworkRequest
 from qgis.PyQt.QtWidgets import (QAction,
                                  QApplication,
                                  QMessageBox,
@@ -48,7 +49,8 @@ from qgis.PyQt.QtWidgets import (QAction,
                                  QHeaderView)
 # from PyQt5 import QtCore
 from qgis.gui import QgsHighlight, QgsMapToolEmitPoint
-from qgis.core import (QgsVectorLayer,
+from qgis.core import (QgsBlockingNetworkRequest,
+                       QgsVectorLayer,
                        QgsProject,
                        QgsCoordinateReferenceSystem,
                        QgsCoordinateTransform,
@@ -59,7 +61,6 @@ from qgis.core import (QgsVectorLayer,
                        QgsPropertyCollection,
                        QgsProperty,
                        Qgis,
-                       QgsNetworkAccessManager,
                        QgsSimpleMarkerSymbolLayer,
                        QgsMessageLog,
                        QgsRectangle)
@@ -72,15 +73,6 @@ from .start_josm import *
 qgis_version = Qgis.QGIS_VERSION.split("-")[0]
 # For future releases to catch version differences
 # QgsMessageLog.logMessage('Nachricht', 'Flurstücksfinder NRW', level=Qgis.Info)
-# Potentially proxy config
-network_manager = QgsNetworkAccessManager.instance()
-port = network_manager.fallbackProxy().port()
-host = network_manager.fallbackProxy().hostName()
-proxy_type = network_manager.fallbackProxy().type()
-proxies = {}
-if proxy_type == 3:
-    proxies["http"] = f"http://{host}:{port}"
-    proxies["https"] = f"https://{host}:{port}"
 
 # ---------------------------------------------------------------------------- #
 # Class to initialize the plugin GUIs                                          #
@@ -531,10 +523,11 @@ class FlurstuecksFinderNRW:
 
         if base_url is not None:
             url = base_url + urllib.parse.unquote_plus(urllib.parse.urlencode(param))
-            response = requests.get(url, stream=True, proxies=proxies)
-            if response.status_code == 200:
-                response.raw.decode_content = True
-                tree = etree.parse(response.raw)
+            request = QgsBlockingNetworkRequest()
+            request.get(QNetworkRequest(QUrl(url)),True)
+            reply = request.reply()
+            if reply.attribute(QNetworkRequest.HttpStatusCodeAttribute) == 200:
+                tree = etree.parse(BytesIO(reply.content()))
                 root = tree.getroot()
                 nsmap = root.nsmap
                 if None in nsmap.keys():
@@ -1351,18 +1344,23 @@ class FlurstuecksFinderNRW:
         url_md5 = 'https://kreis-viersen.github.io/katasteraemter-gemarkungen-fluren-nrw/data/katasteraemter-gemarkungen-fluren-nrw.json.md5'
         url_json = 'https://kreis-viersen.github.io/katasteraemter-gemarkungen-fluren-nrw/data/katasteraemter-gemarkungen-fluren-nrw.json'
         masterfile = os.path.join(self.cache_dir, 'katasteraemter-gemarkungen-fluren-nrw.json')
-        response_md5 = requests.get(url_md5, proxies=proxies)
+        request = QgsBlockingNetworkRequest()
+        request.get(QNetworkRequest(QUrl(url_md5)),True)
+        reply = request.reply()
+        response_md5 = str(reply.content(), 'utf-8')
         hash_md5 = None
         hash_json = None
-        if response_md5.status_code == 200:
-            hash_md5 = response_md5.text.split(" ")[0]
+        if reply.attribute(QNetworkRequest.HttpStatusCodeAttribute) == 200:
+            hash_md5 = response_md5.split(" ")[0]
             if os.path.isfile(masterfile):
                 with open(masterfile,'rb') as file:
                     hash_json = hashlib.md5(file.read()).hexdigest()
             if not os.path.isfile(masterfile) or (hash_json != hash_md5):
-                response_json = requests.get(url_json, proxies=proxies)
+                request.get(QNetworkRequest(QUrl(url_json)),True)
+                reply = request.reply()
+                response_json = reply.content()
                 with open(masterfile, 'wb') as json_file:
-                    json_file.write(response_json.content)
+                    json_file.write(response_json)
                 self.PushMessage(message='Daten vom Flurstücksfinder NRW aktualisiert.', level=Qgis.Info)
             with open(masterfile, encoding='UTF-8') as json_file:
                 self.katasterdaten = json.load(json_file)
