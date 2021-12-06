@@ -1372,21 +1372,20 @@ class FlurstuecksFinderNRW:
 
     def StartupRoutine(self):
         """ A function to reset most fields and textboxes """
-         # Checks the CRS on start
-        if self.CheckCache() is True:
-            self.CheckCRS()
-            self.ClearTextFields()
-            self.DisablePushButtons()
-            self.ResetComboBoxesIndex()
-            if self.nrw is True:
-                self.FillComboBoxKatasteramt()
-                if self.katasteramt:
-                    idx = self.dockwidget.cmb_katasteramt.findText(self.katasteramt, Qt.MatchFixedString)
-                    if idx != -1:
-                        self.dockwidget.cmb_katasteramt.setCurrentIndex(idx)
-                        self.FillComboBoxGemarkung()
-            else:
-                self.FillComboBoxGemarkung()
+        # Checks the CRS on start
+        self.CheckCRS()
+        self.ClearTextFields()
+        self.DisablePushButtons()
+        self.ResetComboBoxesIndex()
+        if self.nrw is True:
+            self.FillComboBoxKatasteramt()
+            if self.katasteramt:
+                idx = self.dockwidget.cmb_katasteramt.findText(self.katasteramt, Qt.MatchFixedString)
+                if idx != -1:
+                    self.dockwidget.cmb_katasteramt.setCurrentIndex(idx)
+                    self.FillComboBoxGemarkung()
+        else:
+            self.FillComboBoxGemarkung()
 
     def run(self):
         """ Method to run the plugin """
