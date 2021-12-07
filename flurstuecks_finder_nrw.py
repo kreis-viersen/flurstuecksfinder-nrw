@@ -22,51 +22,51 @@
  ***************************************************************************/
 """
 
-import os
-import sys
-from datetime import datetime
-import webbrowser
-import configparser
-import json
-import re
 from collections import OrderedDict
+import configparser
 import hashlib
-import urllib
 from io import BytesIO
+import json
 from lxml import etree
+import os
+import re
+import sys
+import urllib
+import webbrowser
 
-from qgis.PyQt.QtCore import QCoreApplication, Qt, pyqtSignal, QSettings, QSize, QUrl
+from qgis.core import (Qgis,
+                       QgsBlockingNetworkRequest,
+                       QgsCoordinateReferenceSystem,
+                       QgsCoordinateTransform,
+                       QgsMessageLog,
+                       QgsPalLayerSettings,
+                       QgsProject,
+                       QgsProperty,
+                       QgsPropertyCollection,
+                       QgsRectangle,
+                       QgsSimpleMarkerSymbolLayer,
+                       QgsTextBufferSettings,
+                       QgsTextFormat,
+                       QgsVectorLayer,
+                       QgsVectorLayerSimpleLabeling)
+
+from qgis.gui import QgsHighlight, QgsMapToolEmitPoint
+from qgis.utils import iface
+
 from qgis.PyQt import uic
-from qgis.PyQt.QtGui import QIcon, QColor, QFont, QPixmap
+from qgis.PyQt.QtCore import pyqtSignal, QCoreApplication, Qt, QSettings, QSize, QUrl
+from qgis.PyQt.QtGui import QColor, QFont, QIcon, QPixmap
 from qgis.PyQt.QtNetwork import QNetworkRequest
 from qgis.PyQt.QtWidgets import (QAction,
                                  QApplication,
-                                 QMessageBox,
-                                 QToolButton,
-                                 QMenu,
                                  QDockWidget,
+                                 QHeaderView,
+                                 QMenu,
+                                 QMessageBox,
                                  QTableWidgetItem,
-                                 QHeaderView)
-# from PyQt5 import QtCore
-from qgis.gui import QgsHighlight, QgsMapToolEmitPoint
-from qgis.core import (QgsBlockingNetworkRequest,
-                       QgsVectorLayer,
-                       QgsProject,
-                       QgsCoordinateReferenceSystem,
-                       QgsCoordinateTransform,
-                       QgsPalLayerSettings,
-                       QgsVectorLayerSimpleLabeling,
-                       QgsTextBufferSettings,
-                       QgsTextFormat,
-                       QgsPropertyCollection,
-                       QgsProperty,
-                       Qgis,
-                       QgsSimpleMarkerSymbolLayer,
-                       QgsMessageLog,
-                       QgsRectangle)
+                                 QToolButton)
 
-from qgis.utils import iface
-# Initialize Qt resources from file resources.py
+# Initialize Qt resources from file resources_rc.py
 from .resources_rc import *
 from .start_josm import *
 
