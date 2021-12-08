@@ -511,7 +511,7 @@ class FlurstuecksFinderNRW:
         """ Get available CRS from WFS """
         # WFS Request URL
         base_url = self.GetBaseURL()
-
+        self.crs_dict.clear()
         param = {
             'service': 'WFS',
             'version': '2.0.0',
