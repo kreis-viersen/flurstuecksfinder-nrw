@@ -284,12 +284,12 @@ class FlurstuecksFinderNRW:
 
         # Button for Flurstück search via Flurstückkennzeichen
         self.dockwidget.btn_suchen_flurstueck_nr.clicked.connect(lambda:
-            self.SearchFlurstueck('flstkennz'))
+            self.SearchFlurstueck('flstkennz', None))
         # Button for Flurstück search via ALKIS ID
         self.dockwidget.btn_suchen_alkis_id.clicked.connect(lambda:
-            self.SearchFlurstueck('alkisid'))
+            self.SearchFlurstueck('alkisid', None))
         # Search the Flurstück if the last combobox is activated
-        self.dockwidget.cmb_flurstueck.activated.connect(lambda: self.SearchFlurstueck('flstkennz'))
+        self.dockwidget.cmb_flurstueck.activated.connect(lambda: self.SearchFlurstueck('flstkennz', None))
         # button adds or deletes the Flurstück polygon
         self.dockwidget.btn_add_flurstueck.clicked.connect(
             lambda: self.AddFlurstueckLayer(self.layer))
@@ -342,10 +342,10 @@ class FlurstuecksFinderNRW:
         if key in [Qt.Key_Return, Qt.Key_Enter]:
             if len(self.dockwidget.txt_alkis_id.text()) != 0\
                     and self.dockwidget.txt_alkis_id.hasFocus():
-                self.SearchFlurstueck('alkisid')
+                self.SearchFlurstueck('alkisid', None)
             elif len(self.dockwidget.txt_gemarkung_flur_flurstueck.text()) != 0\
                     and self.dockwidget.txt_gemarkung_flur_flurstueck.hasFocus():
-                self.SearchFlurstueck('flstkennz')
+                self.SearchFlurstueck('flstkennz', None)
 
     def PushMessage(self, message, level):
         self.iface.messageBar().clearWidgets()
@@ -933,45 +933,49 @@ class FlurstuecksFinderNRW:
 # Functions for interaction with the Flurstücke                                #
 # ---------------------------------------------------------------------------- #
 
-    def SearchFlurstueck(self, art):
+    def SearchFlurstueck(self, art, mouse_click):
         """ The actual search function, which uses either the Flurstückkennzeichen or the ALKIS ID """
-        text_alkis_id = self.dockwidget.txt_alkis_id.text()
-        text_flstkennz = self.dockwidget.txt_gemarkung_flur_flurstueck.text()
-        if self.dockwidget.rb_group.checkedButton().text() in ['Stadt Krefeld', 'Kreis Wesel', 'Kreis Viersen', 'Kreis Kleve']:
-            gem_id = text_flstkennz.split("-")[0]
-            for k, v in self.katasterdaten.items():
-                for vk in v.values():
-                    gem_nr = vk.get('schluessel')
-                    if gem_nr == gem_id:
-                        button = [button for button in self.dockwidget.rb_group.buttons() if k in button.text()]
-                        if button:
-                            button = button[0]
-                            button.setChecked(True)
-        flstkennz = None
-        alkis_id = None
-        url = None
-        flurstueck_layer = None
-        pattern_alkis = re.compile(r'^DENW\d{2}AL\w{8,10}$')
-        pattern_flst_ohne_nenner = re.compile(r'^\d{4}-\d{1,3}-\d{1,5}$')
-        patter_flst_mit_nenner = re.compile(r'^\d{4}-\d{1,3}-\d{1,5}\/\d{1,5}$')
-        if pattern_alkis.match(text_alkis_id):
-            alkis_id = pattern_alkis.match(text_alkis_id).group()
-        if pattern_flst_ohne_nenner.match(text_flstkennz):
-            flstkennz = pattern_flst_ohne_nenner.match(text_flstkennz).group()
-        if patter_flst_mit_nenner.match(text_flstkennz):
-            flstkennz = patter_flst_mit_nenner.match(text_flstkennz).group()
-        if flstkennz is not None:
-            flstkennz, _ = self.CreateFlurstueckKennzeichen(flstkennz)
-        if flstkennz is not None and art == 'flstkennz':
-            url = self.GetURL(filter='flstkennz', id=flstkennz)
-        elif alkis_id is not None and art == 'alkisid':
-            url = self.GetURL(filter='oid', id=alkis_id)
-        elif flstkennz is None and art == 'flstkennz':
-            self.PushMessage(message='Es konnte kein Flurstück mit dieser Kennung gefunden werden.',
-                             level=Qgis.Info)
-        elif alkis_id is None and art == 'alkisid':
-            self.PushMessage(message='Mit dieser ALKIS-ID konnte kein Flurstück gefunden werden.',
-                             level=Qgis.Info)
+        if art in ['flstkennz', 'alkisid']:
+            text_alkis_id = self.dockwidget.txt_alkis_id.text()
+            text_flstkennz = self.dockwidget.txt_gemarkung_flur_flurstueck.text()
+            if self.dockwidget.rb_group.checkedButton().text() in ['Stadt Krefeld', 'Kreis Wesel', 'Kreis Viersen', 'Kreis Kleve']:
+                gem_id = text_flstkennz.split("-")[0]
+                for k, v in self.katasterdaten.items():
+                    for vk in v.values():
+                        gem_nr = vk.get('schluessel')
+                        if gem_nr == gem_id:
+                            button = [button for button in self.dockwidget.rb_group.buttons() if k in button.text()]
+                            if button:
+                                button = button[0]
+                                button.setChecked(True)
+            flstkennz = None
+            alkis_id = None
+            url = None
+            flurstueck_layer = None
+            pattern_alkis = re.compile(r'^DENW\d{2}AL\w{8,10}$')
+            pattern_flst_ohne_nenner = re.compile(r'^\d{4}-\d{1,3}-\d{1,5}$')
+            patter_flst_mit_nenner = re.compile(r'^\d{4}-\d{1,3}-\d{1,5}\/\d{1,5}$')
+            if pattern_alkis.match(text_alkis_id):
+                alkis_id = pattern_alkis.match(text_alkis_id).group()
+            if pattern_flst_ohne_nenner.match(text_flstkennz):
+                flstkennz = pattern_flst_ohne_nenner.match(text_flstkennz).group()
+            if patter_flst_mit_nenner.match(text_flstkennz):
+                flstkennz = patter_flst_mit_nenner.match(text_flstkennz).group()
+            if flstkennz is not None:
+                flstkennz, _ = self.CreateFlurstueckKennzeichen(flstkennz)
+            if flstkennz is not None and art == 'flstkennz':
+                url = self.GetURL(filter='flstkennz', id=flstkennz)
+            elif alkis_id is not None and art == 'alkisid':
+                url = self.GetURL(filter='oid', id=alkis_id)
+            elif flstkennz is None and art == 'flstkennz':
+                self.PushMessage(message='Es konnte kein Flurstück mit dieser Kennung gefunden werden.',
+                                 level=Qgis.Info)
+            elif alkis_id is None and art == 'alkisid':
+                self.PushMessage(message='Mit dieser ALKIS-ID konnte kein Flurstück gefunden werden.',
+                                 level=Qgis.Info)
+        elif art == 'clicked':
+            x, y = mouse_click[0], mouse_click[1]
+            url = self.GetURL(filter='clicked', x=x, y=y)
         if url is not None:
             if self.nrw is False:
                 fieldnames = ['KREIS', 'FLSTKENNZ', 'IDFLURST']
@@ -1084,7 +1088,7 @@ class FlurstuecksFinderNRW:
         # If the attempt fails, perform a new search using the ALKIS ID
         # and write the result into the variable Layer
         except:
-            self.layer = self.SearchFlurstueck('alkisid')
+            self.layer = self.SearchFlurstueck('alkisid', None)
 
         # If there is no layer with the same name, add it
         if not layers:
@@ -1145,76 +1149,12 @@ class FlurstuecksFinderNRW:
         self.RemoveHighlights()
         self.iface.mapCanvas().refresh()
 
-    def GetFlurstueckClicked(self, mouse_click):
-        """ Calls Flurstück info per click """
-        # X and Y coordinate from mouse click
-        x, y = mouse_click[0], mouse_click[1]
-        # Checked again since CRS
-        self.CheckCRS()
-
-        # Creates a WFS request URL with the coordinates
-        url = self.GetURL(filter='clicked', x=x, y=y)
-        # Creates a vector layer from the WFS Request
-        if self.nrw is False:
-            fieldnames = ['GEMARKUNG', 'FLSTKENNZ', 'IDFLURST', 'KREIS']
-        elif self.nrw is True:
-            fieldnames = ['gemarkung', 'flstkennz', 'idflurst', 'kreis']
-        clicked_layer = QgsVectorLayer(url, 'Flurstueck_clicked', 'WFS')
-        # Initialization of the ALKIS ID and the Flurstückkennzeichen
-        alkis_id = None
-        flstkennz = None
-
-        # If the layer is valid and contains features
-        if clicked_layer.isValid():
-            # Flurstückkennzeichen is read from the feature
-            flstkennz = [feature[fieldnames[1]]
-                     for feature in clicked_layer.getFeatures()]
-            if flstkennz:
-                flstkennz = flstkennz[0]
-            # ALKID ID is read from the feature
-            alkis_id = [flurstueck[fieldnames[2]]
-                       for flurstueck in clicked_layer.getFeatures()]
-            if alkis_id:
-                alkis_id = alkis_id[0]
-
-            katasteramt = [flurstueck[fieldnames[3]]
-                       for flurstueck in clicked_layer.getFeatures()]
-            if katasteramt:
-                self.katasteramt = katasteramt[0]
-
-            if not flstkennz and not alkis_id and not katasteramt:
-                self.PushMessage(message=f'An Koordinate {x} : {y} wurde kein Flurstück gefunden!\n\
-                Möglicherweise suchen Sie außerhalb des WFS-Gebiets.', level=Qgis.Warning)
-
-            if self.katasteramt:
-                idx = self.dockwidget.cmb_katasteramt.findText(
-                    self.katasteramt, Qt.MatchFixedString)
-                self.dockwidget.cmb_katasteramt.setCurrentIndex(idx)
-
-            if flstkennz:
-                flstkennz = self.SplitFlurstueck(flstkennz)
-
-                # Writes the Flurstück abbreviation into the text field
-                self.dockwidget.txt_gemarkung_flur_flurstueck.setText(
-                    flstkennz)
-
-            # If an ALKIS ID exists
-            if alkis_id:
-                self.dockwidget.txt_alkis_id.setText(alkis_id)
-                # Get all info from the Flurstück via the ALKIS ID
-                self.SearchFlurstueck('alkisid')
-                # Sets the combo boxes to the value of the text field
-                self.ParseTextFieldsComboBoxes()
-        else:
-            self.PushMessage(message=f'An Koordinate {x} : {y} wurde kein Flurstück gefunden!\n\
-            Möglicherweise suchen Sie außerhalb des WFS-Gebiets.', level=Qgis.Warning)
-
     def SearchFlurstueckClicked(self):
         """ Function to search for the clicked Flurstück """
         if not self.dockwidget.isVisible():
             self.first_start = True
             self.run()
-        self.mouse_click.canvasClicked.connect(self.GetFlurstueckClicked)
+        self.mouse_click.canvasClicked.connect(lambda xy: self.SearchFlurstueck('clicked', xy))
         maptool = self.mouse_click
         maptool.setCursor(Qt.WhatsThisCursor)
         self.canvas.setMapTool(maptool)
@@ -1284,9 +1224,9 @@ class FlurstuecksFinderNRW:
         """ Opens JOSM with the coordinates of the Flurstück """
         if not self.layer:
             if len(self.dockwidget.txt_alkis_id.text()) != 0:
-                self.SearchFlurstueck('alkisid')
+                self.SearchFlurstueck('alkisid', None)
             elif len(self.dockwidget.txt_gemarkung_flur_flurstueck.text()) != 0:
-                self.SearchFlurstueck('flstkennz')
+                self.SearchFlurstueck('flstkennz', None)
         if self.layer:
             extent = self.extent
             geom = self.geom
