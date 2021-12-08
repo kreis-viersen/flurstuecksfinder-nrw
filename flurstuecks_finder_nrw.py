@@ -397,6 +397,7 @@ class FlurstuecksFinderNRW:
         if check_button is not None:
             check_button = check_button[0]
             check_button.setChecked(True)
+        self.dockwidget.rb_group.setExclusive(True)
 
     def RadioButtonChanged(self, button, checked):
         """ Checks the setting of the radio buttons
@@ -413,15 +414,14 @@ class FlurstuecksFinderNRW:
             self.dockwidget.cmb_katasteramt.setCurrentIndex(-1)
             self.ChangePushButtonsIcons("masterportal")
             self.FillComboBoxGemarkung()
-            self.GetCRS()
         elif checked is True and button.text() == 'NRW':
             self.nrw = True
             self.config['DEFAULT']['nrw'] = 'True'
             self.dockwidget.cmb_katasteramt.setEnabled(True)
             self.ChangePushButtonsIcons("timonline")
             self.FillComboBoxKatasteramt()
-            self.GetCRS()
         if checked is True:
+            self.GetCRS()
             if os.path.isfile(self.config_file):
                 with open(self.config_file, 'w+', encoding='UTF-8') as file:
                     self.config.write(file)
