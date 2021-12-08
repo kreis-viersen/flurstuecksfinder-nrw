@@ -544,7 +544,6 @@ class FlurstuecksFinderNRW:
         """ Checks the CRS """
         crs_list = {}
         crs = None
-        results = []
 
         # Checks current CRS
         crs = QgsProject.instance().crs().authid()
