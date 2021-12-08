@@ -914,7 +914,7 @@
              <string>NRW</string>
             </property>
             <property name="checked">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="autoExclusive">
              <bool>false</bool>
@@ -1024,6 +1024,10 @@
   </property>
  </designerdata>
  <buttongroups>
-  <buttongroup name="rb_group"/>
+  <buttongroup name="rb_group">
+   <property name="exclusive">
+    <bool>false</bool>
+   </property>
+  </buttongroup>
  </buttongroups>
 </ui>
