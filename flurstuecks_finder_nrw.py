@@ -145,6 +145,7 @@ class FlurstuecksFinderNRW:
 
         # Initialization of various variables
         self.crs = None
+        self.crs_dict = {}
         self.epsg = None
         self.geom = None
         self.nrw = True
@@ -298,8 +299,6 @@ class FlurstuecksFinderNRW:
         self.dockwidget.btn_open_josm.clicked.connect(lambda: self.OpenBrowser('josm'))
         # button opens JOSM
         self.dockwidget.btn_open_id.clicked.connect(lambda: self.OpenBrowser('id'))
-        # Initializes the functions of the radiobuttons
-        self.InitRadioButtons()
         # Execute the search when the return key is pressed
         self.dockwidget.keyPressed.connect(self.KeyPressed)
         self.dockwidget.txt_gemarkung_flur_flurstueck.textChanged.connect(
@@ -414,12 +413,14 @@ class FlurstuecksFinderNRW:
             self.dockwidget.cmb_katasteramt.setCurrentIndex(-1)
             self.ChangePushButtonsIcons("masterportal")
             self.FillComboBoxGemarkung()
+            self.GetCRS()
         elif checked is True and button.text() == 'NRW':
             self.nrw = True
             self.config['DEFAULT']['nrw'] = 'True'
             self.dockwidget.cmb_katasteramt.setEnabled(True)
             self.ChangePushButtonsIcons("timonline")
             self.FillComboBoxKatasteramt()
+            self.GetCRS()
         if checked is True:
             if os.path.isfile(self.config_file):
                 with open(self.config_file, 'w+', encoding='UTF-8') as file:
@@ -506,15 +507,11 @@ class FlurstuecksFinderNRW:
 
         return base_url
 
-    def CheckCRS(self):
-        """ Checks the CRS """
-        crs_dict = {}
-        crs_list = {}
-        crs = None
-        results = []
+    def GetCRS(self):
+        """ Get available CRS from WFS """
         # WFS Request URL
         base_url = self.GetBaseURL()
-
+        self.crs_dict.clear()
         param = {
             'service': 'WFS',
             'version': '2.0.0',
@@ -541,25 +538,29 @@ class FlurstuecksFinderNRW:
             if results:
                 for idx, result in enumerate(results):
                     epsg = result.split('def:crs:')[1].replace('::', ':')
-                    crs_dict[idx] = {'uri': result, 'epsg': epsg}
+                    self.crs_dict[idx] = {'uri': result, 'epsg': epsg}
 
-            # Checks current CRS
-            crs = QgsProject.instance().crs().authid()
+    def CheckCRS(self):
+        """ Checks the CRS """
+        crs_list = {}
+        crs = None
 
-            # If a CRS is defined, then it is checked whether this is contained in the list
-            # of the allowed WFS CRS, if not: error message
+        # Checks current CRS
+        crs = QgsProject.instance().crs().authid()
 
-            if crs and crs_dict:
-                crs_list = [i.get('epsg') for i in crs_dict.values()]
-                if crs in [i.get('epsg') for i in crs_dict.values()]:
-                    self.crs = [i.get('uri') for i in crs_dict.values() if i.get('epsg') == crs][0]
-                    self.epsg = [i.get('epsg').strip('EPSG:') for i in crs_dict.values() if i.get('epsg') == crs][0]
-                else:
-                    crs_string = '\n'.join(crs_list)
-                    mb = self.ShowMessage(
-                        'Info', f'Ihr derzeitig ausgewähltes KBS "{crs}" ist nicht mit dem Flurstücksfinder NRW kompatibel')
-                    mb.setDetailedText('Erlaubte KBS: \n' + crs_string)
-                    mb.exec()
+        # If a CRS is defined, then it is checked whether this is contained in the list
+        # of the allowed WFS CRS, if not: error message
+        if crs and self.crs_dict:
+            crs_list = [i.get('epsg') for i in self.crs_dict.values()]
+            if crs in [i.get('epsg') for i in self.crs_dict.values()]:
+                self.crs = [i.get('uri') for i in self.crs_dict.values() if i.get('epsg') == crs][0]
+                self.epsg = [i.get('epsg').strip('EPSG:') for i in self.crs_dict.values() if i.get('epsg') == crs][0]
+            else:
+                crs_string = '\n'.join(crs_list)
+                mb = self.ShowMessage(
+                    'Info', f'Ihr derzeitig ausgewähltes KBS "{crs}" ist nicht mit dem Flurstücksfinder NRW kompatibel')
+                mb.setDetailedText('Erlaubte KBS: \n' + crs_string)
+                mb.exec()
 
     def GetURL(self, filter, **kwargs):
         """ Method to create the WFS URL. The arguments are passed to the method
@@ -1370,8 +1371,11 @@ class FlurstuecksFinderNRW:
 
     def StartupRoutine(self):
         """ A function to reset most fields and textboxes """
+        # Initializes the functions of the radiobuttons
+        self.InitRadioButtons()
         # Checks the CRS on start
         self.CheckCRS()
+
         self.ClearTextFields()
         self.DisablePushButtons()
         self.ResetComboBoxesIndex()
