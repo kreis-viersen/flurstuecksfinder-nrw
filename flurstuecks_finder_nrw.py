@@ -865,9 +865,7 @@ class FlurstuecksFinderNRW:
                 idx2 = self.dockwidget.cmb_flur_nr.findText(
                     flur, Qt.MatchFixedString)
                 if idx2 != -1:
-                    self.dockwidget.cmb_flur_nr.blockSignals(True)
                     self.dockwidget.cmb_flur_nr.setCurrentIndex(idx2)
-                    self.dockwidget.cmb_flur_nr.blockSignals(False)
 
             if flst != self.dockwidget.cmb_flurstueck.currentText():
                 idx3 = self.dockwidget.cmb_flurstueck.findText(
