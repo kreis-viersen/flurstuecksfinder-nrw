@@ -1005,10 +1005,20 @@ class FlurstuecksFinderNRW:
                         flurstueck_layer.setName(flstkennz_kurz)
                         self.ShowFlurstueck(flurstueck_layer)
                     else:
-                        self.PushMessage(message='Mit dieser Kennung konnte kein Flurstück gefunden werden.',
+                        if art == 'clicked':
+                            self.PushMessage(message=f'An Koordinate {x} : {y} wurde kein Flurstück gefunden!\n\
+                            Möglicherweise suchen Sie außerhalb des WFS-Gebiets.',
+                                         level=Qgis.Info)
+                        else:
+                            self.PushMessage(message='Mit dieser Kennung konnte kein Flurstück gefunden werden.',
                                          level=Qgis.Info)
                 else:
-                    self.PushMessage(message='Mit dieser Kennung konnte kein Flurstück gefunden werden.',
+                    if art == 'clicked':
+                        self.PushMessage(message=f'An Koordinate {x} : {y} wurde kein Flurstück gefunden!\n\
+                        Möglicherweise suchen Sie außerhalb des WFS-Gebiets.',
+                                     level=Qgis.Info)
+                    else:
+                        self.PushMessage(message='Mit dieser Kennung konnte kein Flurstück gefunden werden.',
                                      level=Qgis.Info)
         return flurstueck_layer
 
