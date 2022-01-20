@@ -197,7 +197,9 @@ class FlurstuecksFinderNRW:
 
         # Definition of a mouse click function (returns x and y)
         self.mouse_click = QgsMapToolEmitPoint(self.canvas)
-
+        self.mouse_click.canvasClicked.connect(lambda xy: self.SearchFlurstueck('clicked', xy))
+        self.maptool = self.mouse_click
+        self.maptool.setCursor(Qt.WhatsThisCursor)
         # Variable for the first start of the plugin
         self.first_start = True
 
@@ -843,34 +845,35 @@ class FlurstuecksFinderNRW:
         """ If the content of the textbox changes,
          the contents of the combo boxes have to be compared with it """
         text = self.dockwidget.txt_gemarkung_flur_flurstueck.text()
-        gema_pattern = re.compile(r'^\d{4}')
-        flur_pattern = re.compile(r'^\d{4}\-\d{1,3}')
-        flst_pattern_zae = re.compile(r'^\d{4}\-\d{1,3}\-\d{1,5}$')
-        flst_pattern_nen = re.compile(r'^\d{4}-\d{1,3}-\d{1,5}\/\d{1,5}$')
-        if gema_pattern.match(text):
-            gem = gema_pattern.match(text).group(0)
-            idx1 = self.dockwidget.cmb_gemarkung_id.findText(
-                gem, Qt.MatchFixedString)
-            if idx1 != -1:
-                self.dockwidget.cmb_gemarkung_id.setCurrentIndex(idx1)
-        if flur_pattern.match(text):
-            flur = flur_pattern.match(text).group(0).split('-')[1]
-            idx2 = self.dockwidget.cmb_flur_nr.findText(
-                flur, Qt.MatchFixedString)
-            if idx2 != -1:
-                self.dockwidget.cmb_flur_nr.setCurrentIndex(idx2)
-        if flst_pattern_zae.match(text):
-            flstkennz = flst_pattern_zae.match(text).group(0).split('-')[2]
-            idx3 = self.dockwidget.cmb_flurstueck.findText(
-                flstkennz, Qt.MatchFixedString)
-            if idx3 != -1:
-                self.dockwidget.cmb_flurstueck.setCurrentIndex(idx3)
-        if flst_pattern_nen.match(text):
-            flstkennz = flst_pattern_nen.match(text).group(0).split('-')[2]
-            idx3 = self.dockwidget.cmb_flurstueck.findText(
-                flstkennz, Qt.MatchFixedString)
-            if idx3 != -1:
-                self.dockwidget.cmb_flurstueck.setCurrentIndex(idx3)
+        pattern_zae = re.compile(r'(^\d{4})\-(\d{1,3})\-(\d{1,5}$)')
+        pattern_nen = re.compile(r'^(^\d{4})\-(\d{1,3})\-(\d{1,5}\/\d{1,5}$)')
+        gem_id, flur, flst = None, None, None
+
+        if pattern_zae.match(text):
+            gem_id, flur, flst = pattern_zae.match(text).groups()
+        elif pattern_nen.match(text):
+            gem_id, flur, flst = pattern_nen.match(text).groups()
+        if gem_id is not None and flur is not None and flst is not None:
+
+            if gem_id != self.dockwidget.cmb_gemarkung_id.currentText():
+                idx1 = self.dockwidget.cmb_gemarkung_id.findText(
+                    gem_id, Qt.MatchFixedString)
+                if idx1 != -1:
+                    self.dockwidget.cmb_gemarkung_id.setCurrentIndex(idx1)
+
+            if flur != self.dockwidget.cmb_flur_nr.currentText():
+                idx2 = self.dockwidget.cmb_flur_nr.findText(
+                    flur, Qt.MatchFixedString)
+                if idx2 != -1:
+                    self.dockwidget.cmb_flur_nr.setCurrentIndex(idx2)
+
+            if flst != self.dockwidget.cmb_flurstueck.currentText():
+                idx3 = self.dockwidget.cmb_flurstueck.findText(
+                    flst, Qt.MatchFixedString)
+                if idx3 != -1:
+                    self.dockwidget.cmb_flurstueck.blockSignals(True)
+                    self.dockwidget.cmb_flurstueck.setCurrentIndex(idx3)
+                    self.dockwidget.cmb_flurstueck.blockSignals(False)
 
     def CreateFlurstueckKennzeichen(self, text):
         """ Creates a Flurstück identifier from the contents of the text field.
@@ -1164,10 +1167,7 @@ class FlurstuecksFinderNRW:
         if not self.dockwidget.isVisible():
             self.first_start = True
             self.run()
-        self.mouse_click.canvasClicked.connect(lambda xy: self.SearchFlurstueck('clicked', xy))
-        maptool = self.mouse_click
-        maptool.setCursor(Qt.WhatsThisCursor)
-        self.canvas.setMapTool(maptool)
+        self.canvas.setMapTool(self.maptool)
 
 # ---------------------------------------------------------------------------- #
 # Funktionen für die Tabelle                                                   #
