@@ -38,6 +38,9 @@ from qgis.core import (Qgis,
                        QgsBlockingNetworkRequest,
                        QgsCoordinateReferenceSystem,
                        QgsCoordinateTransform,
+                       QgsField,
+                       QgsFields,
+                       QgsGml,
                        QgsMessageLog,
                        QgsPalLayerSettings,
                        QgsProject,
@@ -54,7 +57,14 @@ from qgis.gui import QgsHighlight, QgsMapToolEmitPoint
 from qgis.utils import iface
 
 from qgis.PyQt import uic
-from qgis.PyQt.QtCore import pyqtSignal, QCoreApplication, Qt, QSettings, QSize, QUrl
+from qgis.PyQt.QtCore import (pyqtSignal,
+                              QCoreApplication,
+                              Qt,
+                              QSettings,
+                              QSize,
+                              QUrl,
+                              QVariant)
+
 from qgis.PyQt.QtGui import QColor, QFont, QIcon, QPixmap
 from qgis.PyQt.QtNetwork import QNetworkRequest
 from qgis.PyQt.QtWidgets import (QAction,
@@ -705,11 +715,30 @@ class FlurstuecksFinderNRW:
         flurstuecke = {}
         flurstuecke_layer = None
         if url is not None:
-            flurstuecke_layer = QgsVectorLayer(url, 'Flurstueck', 'WFS')
             if self.nrw is False:
                 fieldnames = ['FLSTNRZAE', 'FLSTNRNEN', 'FLSTKENNZ']
+                typename = 'gis:alkis_adv_flurstueckpkt'
+                geometry = 'GEOMETRY'
             else:
                 fieldnames = ['flstnrzae', 'flstnrnen', 'flstkennz']
+                typename = 'ave:FlurstueckPunkt'
+                geometry = 'geometrie'
+            fields = QgsFields()
+            for fieldname in fieldnames:
+                fields.append(QgsField(fieldname, QVariant.String, '', 100, 0))
+            gml = None
+            gml = QgsGml(typename, geometry, fields)
+            wfs_request = gml.getFeaturesUri(url)
+            parsed_features = gml.featuresMap()
+            if wfs_request[0] == 0:
+                flurstuecke_layer = QgsVectorLayer(f"point?crs=EPSG:{self.epsg}", 'flurstuecke_layer', "memory")
+                flurstuecke_layer_data_prov = flurstuecke_layer.dataProvider()
+                flurstuecke_layer_data_prov.addAttributes(fields.toList())
+                flurstuecke_layer.updateFields()
+                for i in range(len(parsed_features)):
+                    flurstuecke_layer_data_prov.addFeature(parsed_features[i])
+                flurstuecke_layer.commitChanges()
+                flurstuecke_layer.updateExtents()
         if flurstuecke_layer is not None:
             if flurstuecke_layer.isValid():
                 features = flurstuecke_layer.getFeatures()
@@ -981,10 +1010,34 @@ class FlurstuecksFinderNRW:
             url = self.GetURL(filter='clicked', x=x, y=y)
         if url is not None:
             if self.nrw is False:
-                fieldnames = ['KREIS', 'FLSTKENNZ', 'IDFLURST']
+                fieldnames = ['KREIS', 'FLSTKENNZ', 'IDFLURST', 'OID', 'AKTUALIT', 'FLAECHE',
+                              'LAGEBEZTXT', 'ABWRECHT', 'GEMARKUNG', 'GEMASCHL', 'FLUR', 'FLURSCHL',
+                              'FLSTNRZAE', 'FLSTNRNEN', 'REGBEZIRK', 'REGBEZSCHL', 'KREISSCHL',
+                              'GEMEINDE', 'GMDSCHL', 'LAND', 'LANDSCHL']
+                typename = 'gis:alkis_adv_flurstueck'
+                geometry = 'GEOMETRY'
             else:
-                fieldnames = ['kreis', 'flstkennz', 'idflurst']
-            flurstueck_layer = QgsVectorLayer(url, 'Flurstück', 'WFS')
+                fieldnames = ['kreis', 'flstkennz', 'idflurst', 'oid', 'aktualit', 'gemarkung',
+                              'gemaschl', 'flur', 'flurschl', 'flstnrzae', 'flstnrnen', 'regbezirk',
+                              'regbezschl', 'kreisschl', 'gemeinde', 'gmdschl', 'land', 'landschl']
+                typename = 'ave:Flurstueck'
+                geometry = 'geometrie'
+            fields = QgsFields()
+            for fieldname in fieldnames:
+                fields.append(QgsField(fieldname, QVariant.String, '', 100, 0))
+            gml = None
+            gml = QgsGml(typename, geometry, fields)
+            wfs_request = gml.getFeaturesUri(url)
+            parsed_features = gml.featuresMap()
+            if wfs_request[0] == 0:
+                flurstueck_layer = QgsVectorLayer(f"polygon?crs=EPSG:{self.epsg}", 'flurstueck_layer', "memory")
+                flurstueck_layer_data_prov = flurstueck_layer.dataProvider()
+                flurstueck_layer_data_prov.addAttributes(fields.toList())
+                flurstueck_layer.updateFields()
+                for i in range(len(parsed_features)):
+                    flurstueck_layer_data_prov.addFeature(parsed_features[i])
+                flurstueck_layer.commitChanges()
+                flurstueck_layer.updateExtents()
             if flurstueck_layer:
                 if flurstueck_layer.isValid():
                     katasteramt = [feature[fieldnames[0]] for feature in flurstueck_layer.getFeatures()]
