@@ -1158,14 +1158,6 @@ class FlurstuecksFinderNRW:
 
         # If there is no layer with the same name, add it
         if not layers:
-            new_layer = QgsVectorLayer(f"polygon?crs=EPSG:{self.epsg}", self.layer.name(), "memory")
-            new_layer_data_prov = new_layer.dataProvider()
-            source_attr = list(self.layer.dataProvider().fields())
-            new_layer_data_prov.addAttributes(source_attr)
-            new_layer.updateFields()
-            new_layer_data_prov.addFeatures(list(self.layer.getFeatures()))
-            new_layer.updateExtents()
-            self.layer = new_layer
             QgsProject.instance().addMapLayer(self.layer)
             # Generate a label for the Flurstück
             label_layer = QgsPalLayerSettings()
