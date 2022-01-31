@@ -759,16 +759,6 @@ class FlurstuecksFinderNRW:
 # Functions around comboboxes and textfields                                   #
 # ---------------------------------------------------------------------------- #
 
-    def InitComboBoxes(self):
-        """ Prevents the combo boxes from being opened with a popup
-         instead of a list with scrollbars """
-        self.dockwidget.cmb_gemarkung_name.setStyleSheet('combobox-popup: 0;')
-        self.dockwidget.cmb_gemarkung_id.setStyleSheet('combobox-popup: 0;')
-        self.dockwidget.cmb_flur_nr.setStyleSheet('combobox-popup: 0;')
-        self.dockwidget.cmb_flurstueck.setStyleSheet('combobox-popup: 0;')
-        self.dockwidget.cmb_katasteramt.setStyleSheet('combobox-popup: 0;')
-        self.dockwidget.cmb_katasteramt.view().setMinimumWidth(150)
-
     def FillComboBoxKatasteramt(self):
         """ Fills the katasteramt combobox """
         katasteraemter = None
