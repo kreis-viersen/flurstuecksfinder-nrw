@@ -231,6 +231,9 @@ class FlurstuecksFinderNRW:
             action.setWhatsThis(whats_this)
         if add_to_menu:
             self.menu.addAction(action)
+            self.iface.addPluginToMenu(
+                self.tr(u'&Flurstücksfinder NRW'),
+                action)
         self.actions.append(action)
 
         return action
@@ -335,7 +338,7 @@ class FlurstuecksFinderNRW:
     def unload(self):
         """ Removes the menu items and the buttons """
         for action in self.actions:
-            self.iface.removePluginWebMenu(
+            self.iface.removePluginMenu(
                 self.tr(u'&Flurstücksfinder NRW'),
                 action)
             self.iface.removeToolBarIcon(action)
