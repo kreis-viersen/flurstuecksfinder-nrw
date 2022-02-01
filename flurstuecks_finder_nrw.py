@@ -201,6 +201,11 @@ class FlurstuecksFinderNRW:
         self.menu = self.toolbar_button.menu()
         self.tool_btn_action = self.iface.addToolBarWidget(self.toolbar_button)
 
+        # Initialize plugin menu entry with icon
+        self.menu2 = QMenu(self.tr(u'&Flurstücksfinder NRW'))
+        self.menu2.setIcon(QIcon(self.icon_path + 'finder.png'))
+        self.iface.pluginMenu().addMenu(self.menu2)
+
         # At initialization the plugin is not yet active
         self.pluginIsActive = False
         self.dockwidget = None
@@ -231,6 +236,7 @@ class FlurstuecksFinderNRW:
             action.setWhatsThis(whats_this)
         if add_to_menu:
             self.menu.addAction(action)
+            self.menu2.addAction(action)
         self.actions.append(action)
 
         return action
@@ -335,11 +341,12 @@ class FlurstuecksFinderNRW:
     def unload(self):
         """ Removes the menu items and the buttons """
         for action in self.actions:
-            self.iface.removePluginWebMenu(
+            self.iface.removePluginMenu(
                 self.tr(u'&Flurstücksfinder NRW'),
                 action)
             self.iface.removeToolBarIcon(action)
         self.iface.removeToolBarIcon(self.tool_btn_action)
+        self.menu2.deleteLater()
 
     def RemoveHighlights(self):
         """ This removes previously created map highlights (red markers) """
