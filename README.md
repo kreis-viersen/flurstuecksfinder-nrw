@@ -36,11 +36,11 @@
 
 Hier kann der Katasteramtsbezirk (z.B. Stadt, Kreis, Städteregion) im Bereich "Einstellungen" ausgewählt werden.
 
-- NRW:<br>
+- **NRW:**<br>
   Auswahl des Kastasteramtsbezirks über das Dropdown-Menü, Flurstückssuche auf Basis des NRW-WFS-Dienstes.<br><br>
   Anmerkung: Das Werkzeug [Flurstück mit Klick auf die Karte finden](#flurstück-mit-klick-auf-die-karte-finden) funktioniert landesweit auch ohne explizite Auswahl eines Katasteramtsbezirks.
 
-- Kreis Viersen, Kleve, Wesel und Stadt Krefeld:<br>
+- **Kreis Viersen, Kleve, Wesel und Stadt Krefeld:**<br>
   Flurstückssuche auf Basis des enstprechenden KRZN-WFS-Dienstes (wochenaktuell).
 
 Die Option "Flurstück highlighten" markiert das Flurstück. Die Markierung wird so lange angezeigt bis das Plugin geschlossen oder ein neues Flurstück gesucht wird. Wird die Option deaktiviert, so wird nur der Umring des Flurstücks kurz blinkend hervorgehoben.
@@ -83,12 +83,11 @@ Im Reiter Flurstück Infos können die Informationen des WFS-Dienstes zum betref
 
 <img src="./screenshots/flurstueck_mit_klick_finden.gif">
 
-<br><br>
 Nach Auswahl des Werkzeugs _Flurstück mit Klick finden_ kann durch einen einfachen Klick auf die Karte das Flurstück an der entsprechenden Stelle gefunden werden.
 
-- Ist _NRW_ im [Reiter Einstellungen](#reiter-einstellungen) ausgewählt,  funktioniert die Suche mit Klick auf die Karte landesweit auch ohne explizite Auswahl eines Katasteramtsbezirks.
+- Ist **NRW** im [Reiter Einstellungen](#reiter-einstellungen) ausgewählt,  funktioniert die Suche mit Klick auf die Karte landesweit auch ohne explizite Auswahl eines Katasteramtsbezirks.
 
-- Ist _Kreis Viersen, Kleve, Wesel oder Stadt Krefeld_ im [Reiter Einstellungen](#reiter-einstellungen) ausgewählt, funktioniert die Suche mit Klick innerhalb der jeweiligen Verwaltungsgrenzen.
+- Ist **Kreis Viersen, Kleve, Wesel oder Stadt Krefeld** im [Reiter Einstellungen](#reiter-einstellungen) ausgewählt, funktioniert die Suche mit Klick innerhalb der jeweiligen Verwaltungsgrenzen.
 
 ## Daten
 
