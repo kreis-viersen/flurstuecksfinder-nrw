@@ -2,7 +2,7 @@
 
 ### _QGIS-Plugin zur Suche von Flurstücken in NRW_
 
-<img src="./screenshots/flurstuecksfinder.gif" width="600">
+<img src="./screenshots/flurstuecksfinder.gif">
 
 ## Inhalt
 - [Features](#features)  
@@ -13,7 +13,7 @@
   - [Flurstück mit Klick auf die Karte finden](#flurstück-mit-klick-auf-die-karte-finden)
 - [Daten](#daten)
   - [Verwendete WFS-Dienste](#verwendete-wfs-dienste)
-  - [Katasterämter, Gemarkungen und Fluren](#katasterämter,-gemarkungen-und-fluren)
+  - [Katasterämter, Gemarkungen und Fluren](#katasterämter-gemarkungen-und-fluren)
   - [Lizenz der Daten](#lizenz-der-daten)
 
 
@@ -81,7 +81,7 @@ Im Reiter Flurstück Infos können die Informationen des WFS-Dienstes zum betref
 
 <img src="./screenshots/flurstueck_mit_klick_finden.png" width="300" />
 
-<img src="./screenshots/flurstueck_mit_klick_finden.gif" width="600">
+<img src="./screenshots/flurstueck_mit_klick_finden.gif">
 
 <br><br>
 Nach Auswahl des Werkzeugs _Flurstück mit Klick finden_ kann durch einen einfachen Klick auf die Karte das Flurstück an der entsprechenden Stelle gefunden werden.
