@@ -4,7 +4,7 @@
 
 [general]
 name=Flurstücksfinder NRW
-qgisMinimumVersion=3.20
+qgisMinimumVersion=3.16
 description=Flurstücksuche in NRW
 version=1.0.0
 author=Kreis Viersen
