@@ -509,9 +509,6 @@
              <property name="minimumContentsLength">
               <number>35</number>
              </property>
-             <property name="placeholderText">
-              <string/>
-             </property>
              <property name="frame">
               <bool>true</bool>
              </property>
