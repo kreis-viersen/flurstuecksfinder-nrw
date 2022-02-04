@@ -65,7 +65,7 @@ Sobald ein gültiges Flurstück ausgewählt oder gesucht wurde, werden die Knöp
 | Funktionsknopf | Funktion |
 |--|--|
 | <img src="./icons/web.png" width="40">  | Das Globus-Symbol öffnet [TIM-online] (bei Verwendung des NRW-WFS) bzw. das [Geoportal Niederrhein] (bei Verwendung des KRZN-WFS für Kreis Viersen, Kleve, Wesel oder Stadt Krefeld) an der Position des gewählten Flurstücks. |
-| <img src="./icons/ideditor.png" width="40">  | Das iD-Symbol stellt eine Verbindung zum OpenStreetMap [iD]-Editor) her. Zur Bearbeitung ist ein kostenloses  [OpenStreetMap-Benutzerkonto] erforderlich.|
+| <img src="./icons/ideditor.png" width="40">  | Das iD-Symbol stellt eine Verbindung zum OpenStreetMap [iD]-Editor her. Zur Bearbeitung ist ein kostenloses  [OpenStreetMap-Benutzerkonto] erforderlich.|
 | <img src="./icons/josm.png" width="40">  | Das Karten-Symbol stellt eine Verbindung zu [JOSM] (Java OpenStreetMap Editor) her (diese Funktion sollte nur genutzt werden, wenn JOSM auf dem Endgerät installiert ist). Zur Bearbeitung ist ein kostenloses  [OpenStreetMap-Benutzerkonto] erforderlich.|
 | <img src="./icons/add.png" width="40">  | Durch einen Klick auf das Plus-Symbol kann das Polygon des Flurstücks dem Kartenbild hinzugefügt werden. |
 | <img src="./icons/remove.png" width="40">  |  Durch das Minus-Symbol wird das mit Klick auf das Plus-Symbol hinzugefügte Flurstück wieder entfernt. |
