@@ -4,15 +4,15 @@
 
 [general]
 name=Flurstücksfinder NRW
-qgisMinimumVersion=3.0
+qgisMinimumVersion=3.16
 description=Flurstücksuche in NRW
-version=0.7.0
+version=1.0.0
 author=Kreis Viersen
 email=open@kreis-viersen.de
 
-about=Dieses Plugin bietet die Möglichkeit, Flurstücke innerhalb von Nordrhein-Westfalen zu finden. Hierfür werden verschiedene Requests an den Landes WFS „WFS NW ALKIS Vereinfacht“ gesendet und ausgewertet. Darüber hinaus ist das Plugin auch an den vom KRZN angebotenen WFS ALKIS Vereinfacht angebunden.
+about=Dieses Plugin bietet die Möglichkeit, Flurstücke innerhalb von Nordrhein-Westfalen zu finden. Datengrundlage sind „WFS NW ALKIS Vereinfacht“ von Geobasis NRW und die KRZN-WFS "ALKIS Vereinfacht".
 
-tracker=https://github.com/kreis-viersen/flurstuecksfinder-nrw
+tracker=https://github.com/kreis-viersen/flurstuecksfinder-nrw/issues
 repository=https://github.com/kreis-viersen/flurstuecksfinder-nrw
 # End of mandatory metadata
 
@@ -23,7 +23,7 @@ hasProcessingProvider=no
 # changelog=
 
 # Tags are comma separated with spaces allowed
-tags=python
+tags=suche,kataster,flurstuecke,flurstueck,search,cadastre,nrw
 
 homepage=https://github.com/kreis-viersen/flurstuecksfinder-nrw
 category=Plugins
