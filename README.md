@@ -18,7 +18,7 @@
 
 
 ## Features
- - Sucht Flurtstücke in NRW
+ - Sucht Flurstücke in NRW
   - durch Auswahl von Katasteramtsbezirk, Gemarkung, Flur, Flurstück
   - durch Klick auf die Karte
   - durch Eingabe der Kennung oder ALKIS-ID
