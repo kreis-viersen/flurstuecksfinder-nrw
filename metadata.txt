@@ -6,7 +6,7 @@
 name=Flurstücksfinder NRW
 qgisMinimumVersion=3.16
 description=Find and display parcels (German State of North Rhine-Westphalia) - Flurstücksuche in NRW
-version=1.0.0
+version=1.0.1
 author=Kreis Viersen
 email=open@kreis-viersen.de
 
@@ -27,7 +27,7 @@ hasProcessingProvider=no
 # changelog=
 
 # Tags are comma separated with spaces allowed
-tags=suche,kataster,flurstuecke,flurstueck,search,cadastre,nrw
+tags=alkis,cadastre,flurstueck,flurstuecke,kataster,search,suche,nrw
 
 homepage=https://github.com/kreis-viersen/flurstuecksfinder-nrw
 category=Plugins
