@@ -1021,7 +1021,10 @@ class FlurstuecksFinderNRW:
                 geometry = 'geometrie'
             fields = QgsFields()
             for fieldname in fieldnames:
-                fields.append(QgsField(fieldname, QVariant.String, '', 100, 0))
+                fieldlength = 100
+                if fieldname == 'LAGEBEZTXT':
+                    fieldlength = 1000
+                fields.append(QgsField(fieldname, QVariant.String, '', fieldlength, 0))
             gml = None
             gml = QgsGml(typename, geometry, fields)
             wfs_request = gml.getFeaturesUri(url)
