@@ -5,7 +5,8 @@
 <img src="./screenshots/flurstuecksfinder.gif">
 
 ## Inhalt
-- [Features](#features)  
+- [Features](#features)
+- [Installation](#installation)
 - [Verwendung](#verwendung)
   - [Reiter Einstellungen](#reiter-einstellungen)
   - [Reiter Flurstück suchen](#reiter-flurstück-suchen)
@@ -26,6 +27,11 @@
  - Hinzufügen des Flurstückpolygons als Layer in QGIS
  - Verknüpfung von OpenStreetMap-Editoren ([iD] und [JOSM])
  - Verknüpfung zu [TIM-online] bzw. zum [Geoportal Niederrhein]
+
+
+## Installation
+
+Das Plugin ist im offiziellen [QGIS-Plugin-Repository] enthalten und kann in QGIS über das Hauptmenü (*Erweiterungen -> Erweiterungen verwalten und installieren*) installiert und auch bei Verfügbarkeit einer neuen Version aktualisiert werden.
 
 
 ## Verwendung
@@ -98,7 +104,7 @@ Nach Auswahl des Werkzeugs _Flurstück mit Klick finden_ kann durch einen einfac
 |  ALKIS-AdV-vereinfacht - Kreis Viersen| [VIERSEN WFS] |
 |  ALKIS-AdV-vereinfacht - Kreis Wesel | [WESEL WFS] |
 |  ALKIS-AdV-vereinfacht - Kreis Kleve | [KLEVE WFS] |
-|  ALKIS-AdV-vereinfacht- Stadt Krefeld | [KREFELD WFS] |
+|  ALKIS-AdV-vereinfacht - Stadt Krefeld | [KREFELD WFS] |
 
 ### Katasterämter, Gemarkungen und Fluren
 
@@ -112,6 +118,7 @@ Diese JSON-Datei wird lokal im Pluginverzeichnis gespeichert. Beim Start des Plu
 
 Die Daten der verwendeten WFS-Dienste und auch die JSON-Datei stehen als OpenData unter der [Datenlizenz Deutschland – Zero – Version 2.0].
 
+[QGIS-Plugin-Repository]: <https://plugins.qgis.org/plugins/flurstuecksfinder-nrw/>
 [iD]: <https://wiki.openstreetmap.org/wiki/DE:ID>
 [JOSM]: <https://josm.openstreetmap.de/>
 [TIM-online]: <https://www.tim-online.nrw.de/tim-online2/>
