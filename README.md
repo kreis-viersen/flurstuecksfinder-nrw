@@ -81,6 +81,7 @@ Sobald ein gültiges Flurstück ausgewählt oder gesucht wurde, werden die Knöp
 <img src="./screenshots/reiter_flurstueck_infos.png" width="300">
 
 Im Reiter Flurstück Infos können die Informationen des WFS-Dienstes zum betreffenden Flurstück angezeigt werden.
+Mit einem Rechtsklick in eine Zelle kann der jeweilige Zellenwert in die Zwischenablage kopiert werden.
 
 ### Flurstück mit Klick auf die Karte finden
 
