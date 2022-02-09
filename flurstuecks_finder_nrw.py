@@ -330,6 +330,12 @@ class FlurstuecksFinderNRW:
             self.dockwidget.btn_open_portal.setToolTip(
                 'Öffnet die Flurstücks-Position in TIM-Online')
 
+        # QTableWidget custom action when right-clicking with the mouse, calls a function
+        self.dockwidget.tbl_flurstueck.setContextMenuPolicy(
+            Qt.CustomContextMenu)
+        self.dockwidget.tbl_flurstueck.customContextMenuRequested.connect(
+            self.CopyTableCell)
+
 # ---------------------------------------------------------------------------- #
 
     def onClosePlugin(self):
@@ -1256,12 +1262,6 @@ class FlurstuecksFinderNRW:
             self.dockwidget.tbl_flurstueck.horizontalHeader().setSectionResizeMode(
                 QHeaderView.ResizeToContents)
             self.dockwidget.tbl_flurstueck.horizontalHeader().setSectionResizeMode(0,QHeaderView.Stretch)
-
-            # Custom action when right-clicking with the mouse, calls a function
-            self.dockwidget.tbl_flurstueck.setContextMenuPolicy(
-                Qt.CustomContextMenu)
-            self.dockwidget.tbl_flurstueck.customContextMenuRequested.connect(
-                self.CopyTableCell)
 
     def CopyTableCell(self):
         """ Function is called when a cell has been right-clicked on """
