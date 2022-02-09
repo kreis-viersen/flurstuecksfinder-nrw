@@ -1257,12 +1257,6 @@ class FlurstuecksFinderNRW:
                 QHeaderView.ResizeToContents)
             self.dockwidget.tbl_flurstueck.horizontalHeader().setSectionResizeMode(0,QHeaderView.Stretch)
 
-            # Custom action when right-clicking with the mouse, calls a function
-            self.dockwidget.tbl_flurstueck.setContextMenuPolicy(
-                Qt.CustomContextMenu)
-            self.dockwidget.tbl_flurstueck.customContextMenuRequested.connect(
-                self.CopyTableCell)
-
     def CopyTableCell(self):
         """ Function is called when a cell has been right-clicked on """
         idx = self.dockwidget.tbl_flurstueck.currentRow()
@@ -1383,6 +1377,12 @@ class FlurstuecksFinderNRW:
                     self.FillComboBoxGemarkung()
         else:
             self.FillComboBoxGemarkung()
+
+        # QTableWidget custom action when right-clicking with the mouse, calls a function
+        self.dockwidget.tbl_flurstueck.setContextMenuPolicy(
+            Qt.CustomContextMenu)
+        self.dockwidget.tbl_flurstueck.customContextMenuRequested.connect(
+            self.CopyTableCell)
 
     def run(self):
         """ Method to run the plugin """
