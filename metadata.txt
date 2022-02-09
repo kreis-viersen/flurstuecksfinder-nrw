@@ -6,7 +6,7 @@
 name=Flurstücksfinder NRW
 qgisMinimumVersion=3.16
 description=Find and display parcels (German State of North Rhine-Westphalia) - Flurstücksuche in NRW
-version=1.0.1
+version=1.0.2
 author=Kreis Viersen
 email=open@kreis-viersen.de
 
