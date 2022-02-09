@@ -330,6 +330,12 @@ class FlurstuecksFinderNRW:
             self.dockwidget.btn_open_portal.setToolTip(
                 'Öffnet die Flurstücks-Position in TIM-Online')
 
+        # QTableWidget custom action when right-clicking with the mouse, calls a function
+        self.dockwidget.tbl_flurstueck.setContextMenuPolicy(
+            Qt.CustomContextMenu)
+        self.dockwidget.tbl_flurstueck.customContextMenuRequested.connect(
+            self.CopyTableCell)
+
 # ---------------------------------------------------------------------------- #
 
     def onClosePlugin(self):
@@ -1377,12 +1383,6 @@ class FlurstuecksFinderNRW:
                     self.FillComboBoxGemarkung()
         else:
             self.FillComboBoxGemarkung()
-
-        # QTableWidget custom action when right-clicking with the mouse, calls a function
-        self.dockwidget.tbl_flurstueck.setContextMenuPolicy(
-            Qt.CustomContextMenu)
-        self.dockwidget.tbl_flurstueck.customContextMenuRequested.connect(
-            self.CopyTableCell)
 
     def run(self):
         """ Method to run the plugin """
