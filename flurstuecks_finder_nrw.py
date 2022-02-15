@@ -445,12 +445,16 @@ class FlurstuecksFinderNRW:
             self.config['DEFAULT']['katasteramt'] = self.katasteramt
             self.dockwidget.cmb_katasteramt.setEnabled(False)
             self.dockwidget.cmb_katasteramt.setCurrentIndex(-1)
+            self.dockwidget.id_suchen_gbox.setTitle(f'ID in {self.katasteramt} suchen')
+            self.dockwidget.flurstueck_suchen_gbox.setTitle(f'Flurstück in {self.katasteramt} suchen')
             self.ChangePushButtonsIcons("masterportal")
             self.FillComboBoxGemarkung()
         elif checked is True and button.text() == 'NRW':
             self.nrw = True
             self.config['DEFAULT']['nrw'] = 'True'
             self.dockwidget.cmb_katasteramt.setEnabled(True)
+            self.dockwidget.id_suchen_gbox.setTitle('ID NRW-weit suchen')
+            self.dockwidget.flurstueck_suchen_gbox.setTitle(f'Bitte Katasteramt im Reiter Einstellung wählen')
             self.ChangePushButtonsIcons("timonline")
             self.FillComboBoxKatasteramt()
         if checked is True:
@@ -724,6 +728,7 @@ class FlurstuecksFinderNRW:
         # if idx != -1 and self.nrw is True and self.first_start is False:
         if len(self.dockwidget.cmb_katasteramt) > 1:
             self.katasteramt = self.dockwidget.cmb_katasteramt.currentText()
+            self.dockwidget.flurstueck_suchen_gbox.setTitle(f'Flurstück in {self.katasteramt} suchen')
             if self.katasteramt:
                 self.config['DEFAULT']['katasteramt'] = self.katasteramt
                 with open(self.config_file, 'w+', encoding='UTF-8') as file:
