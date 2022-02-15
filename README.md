@@ -63,8 +63,8 @@ Im Reiter „Flurstück suchen“ gibt es mehrere Möglichkeiten, um nach einem 
 3. Über die ALKIS-ID (z.B. `DENW33AL00009NPL`)
 4. Über das Flurstückskennzeichen, z.B. `05320308900675______` (20 Zeichen)
 
-Bei Variante 1 stehen nur Elemente zur Auswahl, die auf dem WFS-Server vorhanden sind.
-Variante 2, 3 und 4 ermöglichen die direkte Suche über ein Kennzeichen oder eine ALKIS-ID. Die Suche muss hier mit einem Klick auf das Lupen-Symbol ausgeführt werden.
+Bei Variante 1 stehen nur Elemente zur Auswahl, die auf dem WFS-Server für den jeweiligen Kastasteramtsbezirks vorhanden sind.
+Variante 2, 3 und 4 ermöglichen die direkte Suche über ein Kennzeichen oder eine ALKIS-ID. Die Suche muss hier mit einem Klick auf das Lupen-Symbol ausgeführt werden. Ist _NRW_ im Reiter Einstellungen ausgewählt, wird mit einer ID NRW-weit gesucht.
 
 Sobald ein gültiges Flurstück ausgewählt oder gesucht wurde, werden die Knöpfe freigeschaltet und das ausgewählte Flurstück im Kartenfenster angesteuert.
 
