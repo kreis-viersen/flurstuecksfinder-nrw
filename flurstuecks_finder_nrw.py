@@ -162,9 +162,10 @@ class FlurstuecksFinderNRW:
         self.extent = None
         self.katasteramt = None
         self.katasterdaten = None
+        self.cache_updated = False
+
         # Reads out the config file and sets the variable area to the current value
         # current value from the Conig file
-
         self.config.read(self.config_file)
         if self.config.has_option('', 'nrw'):
             self.nrw = self.config['DEFAULT']['nrw']
@@ -1242,10 +1243,11 @@ class FlurstuecksFinderNRW:
         if not self.dockwidget.isVisible():
             self.first_start = True
             self.run()
-        self.canvas.setMapTool(self.maptool)
+        if self.cache_updated is True:
+            self.canvas.setMapTool(self.maptool)
 
 # ---------------------------------------------------------------------------- #
-# Funktionen für die Tabelle                                                   #
+# Table functions                                                              #
 # ---------------------------------------------------------------------------- #
 
     def ReadFlurstueckFields(self):
@@ -1386,7 +1388,14 @@ class FlurstuecksFinderNRW:
                 self.PushMessage(message='Daten vom Flurstücksfinder NRW aktualisiert.', level=Qgis.Info)
             with open(masterfile, encoding='UTF-8') as json_file:
                 self.katasterdaten = json.load(json_file)
+            self.cache_updated = True
             return True
+        else:
+            mb = self.ShowMessage(
+                'Fehler', 'Konnte Daten vom Flurstücksfinder NRW nicht aktualisieren!')
+            mb.setDetailedText('Es konnte keine Verbindung zu\n\nhttps://kreis-viersen.github.io/katasteraemter-gemarkungen-fluren-nrw/data/katasteraemter-gemarkungen-fluren-nrw.json.md5\n\nhergestellt werden.\n\nBitte Netzwerkverbindung und ggf. Proxy-Einstellungen überprüfen.')
+            mb.exec()
+
 
 # ---------------------------------------------------------------------------- #
 
@@ -1416,8 +1425,8 @@ class FlurstuecksFinderNRW:
             self.pluginIsActive = True
 
         self.dockwidget.closingPlugin.connect(self.onClosePlugin)
-        self.iface.addDockWidget(Qt.LeftDockWidgetArea, self.dockwidget)
         if self.CheckCache() is True:
+            self.iface.addDockWidget(Qt.LeftDockWidgetArea, self.dockwidget)
             if self.first_start is True:
                 self.first_start = False
             self.dockwidget.show()
