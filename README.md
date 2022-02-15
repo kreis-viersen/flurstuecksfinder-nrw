@@ -24,7 +24,7 @@
   - durch Klick auf die Karte
   - durch Eingabe des Flurstückskennzeichens, eines verkürzten Kennzeichens oder der ALKIS-ID
 - Abruf von Flurstückinfos
-- Hinzufügen des Flurstückpolygons als Layer in QGIS
+- Hinzufügen des Flurstückspolygon als Layer in QGIS
 - Verknüpfung von OpenStreetMap-Editoren ([iD] und [JOSM])
 - Verknüpfung zu [TIM-online] bzw. zum [Geoportal Niederrhein]
 
