@@ -300,12 +300,15 @@ class FlurstuecksFinderNRW:
         self.dockwidget.cmb_gemarkung_name.currentIndexChanged.connect(self.FillComboBoxFluren)
         self.dockwidget.cmb_flur_nr.currentIndexChanged.connect(self.FillComboBoxFlurstuecke)
 
-        # Button for Flurstück search via Flurstückkennzeichen
+        # Button for Flurstück search via Flurstückkennzeichen (Gemarkung-Flur-Flurstück)
         self.dockwidget.btn_suchen_flurstueck_nr.clicked.connect(lambda:
             self.SearchFlurstueck('flstkennz', None))
         # Button for Flurstück search via ALKIS ID
         self.dockwidget.btn_suchen_alkis_id.clicked.connect(lambda:
             self.SearchFlurstueck('alkisid', None))
+        # Button for Flurstück search via Flurstückkennzeichen
+        self.dockwidget.btn_suchen_flstkennzlang.clicked.connect(lambda:
+            self.SearchFlurstueck('flstkennzlang', None))
         # Search the Flurstück if the last combobox is activated
         self.dockwidget.cmb_flurstueck.activated.connect(lambda: self.SearchFlurstueck('flstkennz', None))
         # button adds or deletes the Flurstück polygon
@@ -323,6 +326,8 @@ class FlurstuecksFinderNRW:
             lambda text: self.TextFieldChanged(text, self.dockwidget.btn_suchen_flurstueck_nr))
         self.dockwidget.txt_alkis_id.textChanged.connect(
             lambda text: self.TextFieldChanged(text, self.dockwidget.btn_suchen_alkis_id))
+        self.dockwidget.txt_flstkennzlang.textChanged.connect(
+            lambda text: self.TextFieldChanged(text, self.dockwidget.btn_suchen_flstkennzlang))
         if self.nrw is False:
             self.dockwidget.btn_open_portal.setToolTip(
                 'Öffnet die Flurstücks-Position im Geoportal Niederrhein')
@@ -371,6 +376,9 @@ class FlurstuecksFinderNRW:
             elif len(self.dockwidget.txt_gemarkung_flur_flurstueck.text()) != 0\
                     and self.dockwidget.txt_gemarkung_flur_flurstueck.hasFocus():
                 self.SearchFlurstueck('flstkennz', None)
+            elif len(self.dockwidget.txt_flstkennzlang.text()) != 0\
+                    and self.dockwidget.txt_flstkennzlang.hasFocus():
+                self.SearchFlurstueck('flstkennzlang', None)
 
     def PushMessage(self, message, level):
         self.iface.messageBar().clearWidgets()
@@ -506,6 +514,7 @@ class FlurstuecksFinderNRW:
         # Disables to search buttons
         self.dockwidget.btn_suchen_alkis_id.setEnabled(False)
         self.dockwidget.btn_suchen_flurstueck_nr.setEnabled(False)
+        self.dockwidget.btn_suchen_flstkennzlang.setEnabled(False)
 # ---------------------------------------------------------------------------- #
 # Functions for direct interaction with the WFS                                #
 # ---------------------------------------------------------------------------- #
@@ -863,6 +872,7 @@ class FlurstuecksFinderNRW:
         flst_zae = self.dockwidget.cmb_flurstueck.currentText()
         n_text = None
         self.dockwidget.txt_alkis_id.clear()
+        self.dockwidget.txt_flstkennzlang.clear()
         # Concatenation of the individual strings with hyphens
         if gem and gem:
             n_text = '-'.join([gem])
@@ -956,6 +966,7 @@ class FlurstuecksFinderNRW:
         """ Cleans the textfields """
         self.dockwidget.txt_alkis_id.clear()
         self.dockwidget.txt_gemarkung_flur_flurstueck.clear()
+        self.dockwidget.txt_flstkennzlang.clear()
 
     def TextFieldChanged(self, text, button):
         """ Activates the buttons when the text has exceeded a certain length """
@@ -969,10 +980,11 @@ class FlurstuecksFinderNRW:
 # ---------------------------------------------------------------------------- #
 
     def SearchFlurstueck(self, art, mouse_click):
-        """ The actual search function, which uses either the Flurstückkennzeichen or the ALKIS ID """
-        if art in ['flstkennz', 'alkisid']:
+        """ The actual search function, which uses either Flurstückskennzeichen (Gemarkung-Flur-Flurstück), ALKIS ID or Flurstückskennzeichen"""
+        if art in ['flstkennz', 'alkisid', 'flstkennzlang']:
             text_alkis_id = self.dockwidget.txt_alkis_id.text()
             text_flstkennz = self.dockwidget.txt_gemarkung_flur_flurstueck.text()
+            text_flstkennzlang = self.dockwidget.txt_flstkennzlang.text()
             if self.dockwidget.rb_group.checkedButton().text() in ['Stadt Krefeld', 'Kreis Wesel', 'Kreis Viersen', 'Kreis Kleve']:
                 gem_id = text_flstkennz.split("-")[0]
                 for k, v in self.katasterdaten.items():
@@ -985,24 +997,30 @@ class FlurstuecksFinderNRW:
                                 button.setChecked(True)
             flstkennz = None
             alkis_id = None
+            flstkennzlang = None
             url = None
             flurstueck_layer = None
             pattern_alkis = re.compile(r'^DENW\d{2}AL\w{8,10}$')
             pattern_flst_ohne_nenner = re.compile(r'^\d{4}-\d{1,3}-\d{1,5}$')
-            patter_flst_mit_nenner = re.compile(r'^\d{4}-\d{1,3}-\d{1,5}\/\d{1,5}$')
+            pattern_flst_mit_nenner = re.compile(r'^\d{4}-\d{1,3}-\d{1,5}\/\d{1,5}$')
+            pattern_flstkennzlang = re.compile(r'^05\d{12}[0-9_]{6}$')
             if pattern_alkis.match(text_alkis_id):
                 alkis_id = pattern_alkis.match(text_alkis_id).group()
             if pattern_flst_ohne_nenner.match(text_flstkennz):
                 flstkennz = pattern_flst_ohne_nenner.match(text_flstkennz).group()
-            if patter_flst_mit_nenner.match(text_flstkennz):
-                flstkennz = patter_flst_mit_nenner.match(text_flstkennz).group()
+            if pattern_flst_mit_nenner.match(text_flstkennz):
+                flstkennz = pattern_flst_mit_nenner.match(text_flstkennz).group()
             if flstkennz is not None:
                 flstkennz, _ = self.CreateFlurstueckKennzeichen(flstkennz)
+            if pattern_flstkennzlang.match(text_flstkennzlang):
+                flstkennzlang = pattern_flstkennzlang.match(text_flstkennzlang).group()
             if flstkennz is not None and art == 'flstkennz':
                 url = self.GetURL(filter='flstkennz', id=flstkennz)
             elif alkis_id is not None and art == 'alkisid':
                 url = self.GetURL(filter='oid', id=alkis_id)
-            elif flstkennz is None and art == 'flstkennz':
+            elif flstkennzlang is not None and art == 'flstkennzlang':
+                url = self.GetURL(filter='flstkennz', id=flstkennzlang)
+            elif (flstkennz is None and art == 'flstkennz') or (flstkennzlang is None and art == 'flstkennzlang'):
                 self.PushMessage(message='Es konnte kein Flurstück mit dieser Kennung gefunden werden.',
                                  level=Qgis.Info)
             elif alkis_id is None and art == 'alkisid':
@@ -1063,6 +1081,7 @@ class FlurstuecksFinderNRW:
                                 button.setChecked(True)
                         self.dockwidget.txt_alkis_id.setText(alkis_id)
                         self.dockwidget.txt_gemarkung_flur_flurstueck.setText(flstkennz_kurz)
+                        self.dockwidget.txt_flstkennzlang.setText(flstkennz)
                         self.ParseTextFieldsComboBoxes()
                         flurstueck_layer.setName(flstkennz_kurz)
                         self.ShowFlurstueck(flurstueck_layer)
@@ -1282,6 +1301,8 @@ class FlurstuecksFinderNRW:
                 self.SearchFlurstueck('alkisid', None)
             elif len(self.dockwidget.txt_gemarkung_flur_flurstueck.text()) != 0:
                 self.SearchFlurstueck('flstkennz', None)
+            elif len(self.dockwidget.text_flstkennzlang.text()) != 0:
+                self.SearchFlurstueck('flstkennzlang', None)
         if self.layer:
             extent = self.extent
             geom = self.geom
