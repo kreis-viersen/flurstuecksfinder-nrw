@@ -19,14 +19,14 @@
 
 
 ## Features
- - Sucht Flurstücke in NRW
+- Sucht Flurstücke in NRW
   - durch Auswahl von Katasteramtsbezirk, Gemarkung, Flur, Flurstück
   - durch Klick auf die Karte
-  - durch Eingabe der Kennung oder ALKIS-ID
- - Abruf von Flurstückinfos
- - Hinzufügen des Flurstückpolygons als Layer in QGIS
- - Verknüpfung von OpenStreetMap-Editoren ([iD] und [JOSM])
- - Verknüpfung zu [TIM-online] bzw. zum [Geoportal Niederrhein]
+  - durch Eingabe des Flurstückskennzeichens, eines verkürzten Kennzeiches oder der ALKIS-ID
+- Abruf von Flurstückinfos
+- Hinzufügen des Flurstückpolygons als Layer in QGIS
+- Verknüpfung von OpenStreetMap-Editoren ([iD] und [JOSM])
+- Verknüpfung zu [TIM-online] bzw. zum [Geoportal Niederrhein]
 
 
 ## Installation
@@ -59,11 +59,12 @@ Die Option "Flurstück highlighten" markiert das Flurstück. Die Markierung wird
 Im Reiter „Flurstück suchen“ gibt es mehrere Möglichkeiten, um nach einem Flurstück zu suchen:
 
 1. Über die Dropdown-Menüs Gemarkung, Gemarkungsschlüssel, Flurnummer und Flurstücksnummer
-2. Direkte Suche über die Kennung (z.B. 3230-1-1)
-3. Über die ALKIS-ID (z.B. DENW33AL00009NPL)
+2. Direkte Suche über das verkürzte Kennzeichen Gemarkung-Flur-Flurstück (z.B. `3230-1-1`)
+3. Über die ALKIS-ID (z.B. `DENW33AL00009NPL`)
+4. Über das Flurstückskennzeichen, z.B. `05320308900675______` (20 Zeichen)
 
 Bei Variante 1 stehen nur Elemente zur Auswahl, die auf dem WFS-Server vorhanden sind.
-Variante 2 und 3 ermöglichen die direkte Suche über eine Kennung oder eine ALKIS-ID. Die Suche muss hier mit einem Klick auf das Lupen-Symbol ausgeführt werden.
+Variante 2, 3 und 4 ermöglichen die direkte Suche über ein Kennzeichen oder eine ALKIS-ID. Die Suche muss hier mit einem Klick auf das Lupen-Symbol ausgeführt werden.
 
 Sobald ein gültiges Flurstück ausgewählt oder gesucht wurde, werden die Knöpfe freigeschaltet und das ausgewählte Flurstück im Kartenfenster angesteuert.
 
