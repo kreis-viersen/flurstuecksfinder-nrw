@@ -22,7 +22,7 @@
 - Sucht Flurstücke in NRW
   - durch Auswahl von Katasteramtsbezirk, Gemarkung, Flur, Flurstück
   - durch Klick auf die Karte
-  - durch Eingabe des Flurstückskennzeichens, eines verkürzten Kennzeiches oder der ALKIS-ID
+  - durch Eingabe des Flurstückskennzeichens, eines verkürzten Kennzeichens oder der ALKIS-ID
 - Abruf von Flurstückinfos
 - Hinzufügen des Flurstückpolygons als Layer in QGIS
 - Verknüpfung von OpenStreetMap-Editoren ([iD] und [JOSM])
