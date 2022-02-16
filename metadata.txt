@@ -24,7 +24,14 @@ repository=https://github.com/kreis-viersen/flurstuecksfinder-nrw
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-# changelog=
+changelog=v1.1.0:
+          - Füge weiteres Suchfeld für vollständiges Flurstückskennzeichen hinzu
+          - Katasteramt in der Suche anzeigen
+          - Fehlermeldung wenn Cache nicht aktualisiert werden kann
+          v1.0.2:
+          - Fix Rechtsklick für Reiter Flurstückinfos
+          v1.0.1:
+          - Erhöhe Feldlänge für LAGEBEZTXT
 
 # Tags are comma separated with spaces allowed
 tags=alkis,cadastre,flurstueck,flurstuecke,kataster,search,suche,nrw
