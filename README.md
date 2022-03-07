@@ -2,6 +2,8 @@
 
 ### _QGIS-Plugin zur Suche von Flurstücken in NRW_
 
+Fragen, Anmerkungen, Fehlermeldungen etc. können z.B. über ein [GitHub-Issue] oder auch gerne per E-Mail an [open@kreis-viersen.de] mitgeteilt werden.
+
 <img src="./screenshots/flurstuecksfinder.gif">
 
 ## Inhalt
@@ -120,6 +122,8 @@ Diese JSON-Datei wird lokal im Pluginverzeichnis gespeichert. Beim Start des Plu
 
 Die Daten der verwendeten WFS-Dienste und auch die JSON-Datei stehen als OpenData unter der [Datenlizenz Deutschland – Zero – Version 2.0].
 
+[GitHub-Issue]: <https://github.com/kreis-viersen/flurstuecksfinder-nrw/issues>
+[open@kreis-viersen.de]: <mailto:open@kreis-viersen.de?subject=Flurst%FCcksfinder%20NRW>
 [QGIS-Plugin-Repository]: <https://plugins.qgis.org/plugins/flurstuecksfinder-nrw/>
 [iD]: <https://wiki.openstreetmap.org/wiki/DE:ID>
 [JOSM]: <https://josm.openstreetmap.de/>
