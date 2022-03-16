@@ -1328,7 +1328,8 @@ class FlurstuecksFinderNRW:
                 StartJosm(self).openJosmApp(xmin, xmax, ymin, ymax)
             elif browser == 'id':
                 dest_crs = QgsCoordinateReferenceSystem.fromEpsgId(4326)
-                if src_crs != dest_crs:  # Wenn das CRS des Layers nicht in WGS84 vorliegt wird eine Transformation durchgeführt
+                # If the CRS of the layer is not in WGS84 a transformation is performed
+                if src_crs != dest_crs:
                     transform = QgsCoordinateTransform(
                         src_crs, dest_crs, QgsProject.instance())
                     x, y = transform.transform(x, y)
@@ -1336,6 +1337,7 @@ class FlurstuecksFinderNRW:
                 webbrowser.open_new_tab(url)
             elif browser == 'portal':
                 dest_crs = QgsCoordinateReferenceSystem.fromEpsgId(25832)
+                # If the CRS of the layer is not in ETRS89 / UTM zone 32N a transformation is performed
                 if src_crs != dest_crs:
                     transform = QgsCoordinateTransform(
                         src_crs, dest_crs, QgsProject.instance())
