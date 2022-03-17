@@ -1314,6 +1314,7 @@ class FlurstuecksFinderNRW:
             extent = self.extent
             geom = self.geom
             x, y = geom.centroid().asPoint().x(), geom.centroid().asPoint().y()
+            x_poi, y_poi = geom.poleOfInaccessibility(1)[0].asPoint().x(), geom.poleOfInaccessibility(1)[0].asPoint().y()
             src_crs = QgsCoordinateReferenceSystem.fromOgcWmsCrs(self.layer.crs().authid())
             if browser == 'josm':
                 dest_crs = QgsCoordinateReferenceSystem.fromEpsgId(4326)
@@ -1327,7 +1328,8 @@ class FlurstuecksFinderNRW:
                 StartJosm(self).openJosmApp(xmin, xmax, ymin, ymax)
             elif browser == 'id':
                 dest_crs = QgsCoordinateReferenceSystem.fromEpsgId(4326)
-                if src_crs != dest_crs:  # Wenn das CRS des Layers nicht in WGS84 vorliegt wird eine Transformation durchgeführt
+                # If the CRS of the layer is not in WGS84 a transformation is performed
+                if src_crs != dest_crs:
                     transform = QgsCoordinateTransform(
                         src_crs, dest_crs, QgsProject.instance())
                     x, y = transform.transform(x, y)
@@ -1335,23 +1337,28 @@ class FlurstuecksFinderNRW:
                 webbrowser.open_new_tab(url)
             elif browser == 'portal':
                 dest_crs = QgsCoordinateReferenceSystem.fromEpsgId(25832)
+                # If the CRS of the layer is not in ETRS89 / UTM zone 32N a transformation is performed
                 if src_crs != dest_crs:
                     transform = QgsCoordinateTransform(
                         src_crs, dest_crs, QgsProject.instance())
                     x, y = transform.transform(x, y)
+                    x_poi, y_poi = transform.transform(x_poi, y_poi)
+                    extent = transform.transform(extent)
+                xmin, xmax, ymin, ymax = extent.xMinimum(
+                ), extent.xMaximum(), extent.yMinimum(), extent.yMaximum()
                 if self.nrw is False:
                     url = 'https://geoportal-niederrhein.de/Verband/?'
                     param = {
                         'layerIDs': '21001,21002,200370,20070,20071,29105flu,29105,29106flu,29106,29107flu,29107,29108flu,29108',
                         'visibility': 'true,true,true,true,true,true,true,true,true,true,true,true,true',
                         'transparency': '0,0,0,0,0,0,0,0,0,0,0,0,0',
-                        'center': f'{x},{y}',
-                        'zoomlevel': '9'
+                        'marker': f'{x_poi},{y_poi}',
+                        'zoomToExtent': f'{xmin},{ymin},{xmax},{ymax}'
                         }
                 else:
                     url = 'https://www.tim-online.nrw.de/tim-online2/?'
                     param = {'bg': 'alkis',
-                             'center': f'{x},{y}',
+                             'center': f'{x_poi},{y_poi}',
                              'icon': 'true',
                              'scale': int(self.canvas.scale())
                              }
