@@ -724,7 +724,7 @@
            </sizepolicy>
           </property>
           <property name="title">
-           <string>Einstellungen</string>
+           <string>Einstellungen / WFS-Gebiet festlegen</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_3">
            <property name="leftMargin">
