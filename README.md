@@ -42,7 +42,7 @@ Das Plugin ist im offiziellen [QGIS-Plugin-Repository] enthalten und kann in QGI
 
 <img src="./screenshots/reiter_einstellungen.png" width="300">
 
-Hier kann der Katasteramtsbezirk (z.B. Stadt, Kreis, Städteregion) im Bereich "Einstellungen" ausgewählt werden. Mit der Änderung des Katasteramtsbezirks wird ebenfalls der verwendete WFS-Dienst geändert.
+Hier kann der Katasteramtsbezirk (z.B. Stadt, Kreis, Städteregion) im Bereich "Einstellungen" ausgewählt werden.
 
 - **NRW:**<br>
   Auswahl des Kastasteramtsbezirks über das Dropdown-Menü, Flurstückssuche auf Basis des NRW-WFS-Dienstes.<br><br>
