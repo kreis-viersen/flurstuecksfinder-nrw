@@ -6,7 +6,7 @@
 name=Flurstücksfinder NRW
 qgisMinimumVersion=3.16.14
 description=Find and display parcels (German State of North Rhine-Westphalia) - Flurstücksuche in NRW
-version=1.1.1
+version=1.1.2
 author=Kreis Viersen
 email=open@kreis-viersen.de
 
@@ -24,7 +24,9 @@ repository=https://github.com/kreis-viersen/flurstuecksfinder-nrw
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-changelog=v1.1.1:
+changelog=v1.1.2:
+          - Überschrift im Einstellungs Reiter erweitert
+          v1.1.1:
           - Verbessere Links auf Geoportal Niederrhein und TIM-online
           v1.1.0:
           - Füge weiteres Suchfeld für vollständiges Flurstückskennzeichen hinzu
@@ -57,4 +59,3 @@ Category of the plugin: Raster, Vector, Database or Web
 
 # If the plugin can run on QGIS Server.
 server=False
-
