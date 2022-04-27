@@ -988,9 +988,9 @@ class FlurstuecksFinderNRW:
     def SearchFlurstueck(self, art, mouse_click):
         """ The actual search function, which uses either Flurstückskennzeichen (Gemarkung-Flur-Flurstück), ALKIS ID or Flurstückskennzeichen"""
         if art in ['flstkennz', 'alkisid', 'flstkennzlang']:
-            text_alkis_id = self.dockwidget.txt_alkis_id.text()
-            text_flstkennz = self.dockwidget.txt_gemarkung_flur_flurstueck.text()
-            text_flstkennzlang = self.dockwidget.txt_flstkennzlang.text()
+            text_alkis_id = self.dockwidget.txt_alkis_id.text().strip()
+            text_flstkennz = self.dockwidget.txt_gemarkung_flur_flurstueck.text().strip()
+            text_flstkennzlang = self.dockwidget.txt_flstkennzlang.text().strip()
             if self.dockwidget.rb_group.checkedButton().text() in ['Stadt Krefeld', 'Kreis Wesel', 'Kreis Viersen', 'Kreis Kleve']:
                 gem_id = text_flstkennz.split("-")[0]
                 for k, v in self.katasterdaten.items():
