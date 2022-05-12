@@ -29,10 +29,10 @@ class StartJosm(object):
     def josmSearchPath(self):
         ''' Funktion zur Suche des JOSM Pfade '''
         if sys.platform.startswith("linux"):
-            app_dir = "/usr/share/josm/"
+            app_dirs = ["/usr/share/josm/"]
             cfg_dir = os.path.join(self.homepath, ".config/JOSM")
         elif sys.platform.startswith("win"):
-            app_dir = r'C:\Program Files (x86)\JOSM'
+            app_dirs = [r'C:\Program Files (x86)\JOSM', os.path.join(self.homepath, r"AppData\Local\JOSM")]
             cfg_dir = os.path.join(self.homepath, r"AppData\Roaming\JOSM")
 
         # Legt den Pfad zum JOSM Programm fest
@@ -43,10 +43,11 @@ class StartJosm(object):
         # Schleife über die JOSM Programm. Variable josm_app_path wird belegt
         # wenn der Pfad zur Datei gültig ist
         for exe in josm_exe:
-            if os.path.isfile(os.path.join(app_dir, exe)):
-                josm_app_path = os.path.join(app_dir, exe)
-            else:
-                pass
+            for app_dir in app_dirs:
+                if os.path.isfile(os.path.join(app_dir, exe)):
+                    josm_app_path = os.path.join(app_dir, exe)
+                else:
+                    pass
 
         # Legt den Pfad zur JOSM Config fest
         josm_cfg_path = None
