@@ -258,6 +258,13 @@ class FlurstuecksFinderNRW:
             callback=self.SearchFlurstueckClicked,
             parent=self.iface.mainWindow())
 
+        # Action for showing about message box
+        self.AddAction(
+            icon_path=self.icon_path + 'info.png',
+            text=self.tr(u'Über'),
+            callback=self.about,
+            parent=self.iface.mainWindow())
+
         # Sets the default action for the button menu
         # Normal search mask as default
         default_action = [a for a in self.actions if a.text()
@@ -1438,3 +1445,11 @@ class FlurstuecksFinderNRW:
                 self.first_start = False
             self.dockwidget.show()
             self.StartupRoutine()
+
+    def about(self):
+        aboutString = "Flurstücksfinder NRW<br>QGIS-Plugin zur Suche von Flurstücken in NRW<br>" + \
+        "Author: Kreis Viersen<br>Mail: <a href=\"mailto:open@kreis-viersen.de?subject=Flurst%FCcksfinder%20NRW\">" + \
+        "open@kreis-viersen.de</a><br>" + \
+        "Web: <a href=\"https://github.com/kreis-viersen/flurstuecksfinder-nrw\">" + \
+        "https://github.com/kreis-viersen/flurstuecksfinder-nrw</a>"
+        QMessageBox.information(self.iface.mainWindow(), "Über Flurstücksfinder NRW", aboutString)
