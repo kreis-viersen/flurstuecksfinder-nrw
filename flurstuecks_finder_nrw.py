@@ -261,7 +261,7 @@ class FlurstuecksFinderNRW:
         # Action for showing about message box
         self.AddAction(
             icon_path=self.icon_path + 'info.png',
-            text=self.tr(u'Über'),
+            text=self.tr(u'Über Flurstücksfinder NRW'),
             callback=self.about,
             parent=self.iface.mainWindow())
 
