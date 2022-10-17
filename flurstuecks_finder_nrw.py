@@ -566,6 +566,7 @@ class FlurstuecksFinderNRW:
 
         if base_url is not None:
             url = base_url + urllib.parse.unquote_plus(urllib.parse.urlencode(param))
+            results = None
             request = QgsBlockingNetworkRequest()
             request.get(QNetworkRequest(QUrl(url)),True)
             reply = request.reply()
@@ -580,6 +581,11 @@ class FlurstuecksFinderNRW:
                 if results is not None:
                     results = results.getchildren()
                     results = [result.text for result in results]
+            else:
+                mb = self.ShowMessage(
+                    'Fehler', 'Konnte verfügbare KBS vom WFS nicht ermitteln!')
+                mb.setDetailedText('Die Anfrage an folgende URL schlug fehl:\n\n' + url)
+                mb.exec()
 
             if results:
                 for idx, result in enumerate(results):
