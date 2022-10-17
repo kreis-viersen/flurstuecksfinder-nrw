@@ -566,6 +566,7 @@ class FlurstuecksFinderNRW:
 
         if base_url is not None:
             url = base_url + urllib.parse.unquote_plus(urllib.parse.urlencode(param))
+            results = None
             request = QgsBlockingNetworkRequest()
             request.get(QNetworkRequest(QUrl(url)),True)
             reply = request.reply()
