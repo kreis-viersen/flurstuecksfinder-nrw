@@ -6,7 +6,7 @@
 name=Flurstücksfinder NRW
 qgisMinimumVersion=3.22
 description=Find and display parcels (German State of North Rhine-Westphalia) - Flurstücksuche in NRW
-version=1.3.0
+version=1.3.1
 author=Kreis Viersen
 email=open@kreis-viersen.de
 
@@ -24,7 +24,9 @@ repository=https://github.com/kreis-viersen/flurstuecksfinder-nrw
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-changelog=v1.3.0:
+changelog=v1.3.1:
+          - Fehlermeldung bei Start des Plugins ergänzt, wenn ein Module nicht importiert werden kann
+          v1.3.0:
           - Es wird mindestens QGIS 3.22 benötigt
           - Fehler behoben und Meldung hinzugefügt, wenn KBS des WFS nicht ermittelt werden kann
           v1.2.0:
