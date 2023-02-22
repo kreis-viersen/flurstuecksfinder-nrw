@@ -25,7 +25,7 @@ repository=https://github.com/kreis-viersen/flurstuecksfinder-nrw
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
 changelog=v1.3.1:
-          - Fehlermeldung bei Start des Plugins ergänzt, wenn ein Module nicht importiert werden kann
+          - Fehlermeldung beim Laden des Plugins ergänzt, wenn ein Python-Modul nicht importiert werden kann
           v1.3.0:
           - Es wird mindestens QGIS 3.22 benötigt
           - Fehler behoben und Meldung hinzugefügt, wenn KBS des WFS nicht ermittelt werden kann

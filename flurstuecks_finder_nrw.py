@@ -54,9 +54,9 @@ try:
     from lxml import etree
 
 except (ModuleNotFoundError, ImportError) as module_error:
-    error_string = f"[Flurstücksfinder NRW Fehler]: {module_error.args[0]} - Module kann nicht importiert werden. Bitte überprüfen Sie, ob das Module installiert ist!"
+    error_string = f"[Flurstücksfinder NRW Fehler]: {module_error.args[0]} - Modul kann nicht importiert werden. Bitte überprüfen Sie, ob dieses Python-Modul installiert ist!"
     QgsMessageLog.logMessage(error_string, "Flurstücksfinder NRW", level=Qgis.Critical)
-    iface.messageBar().pushMessage(error_string, level=Qgis.Critical, duration=10)
+    iface.messageBar().pushMessage(error_string, level=Qgis.Critical)
     sys.exit(error_string)
 
 # Initialize Qt resources from file resources_rc.py
