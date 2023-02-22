@@ -22,59 +22,42 @@
  ***************************************************************************/
 """
 
-from collections import OrderedDict
-import configparser
-import hashlib
-from io import BytesIO
-import json
-from lxml import etree
-import os
-import re
-import sys
-import urllib
-import webbrowser
+try:
+    from qgis.core import (Qgis, QgsBlockingNetworkRequest,
+                           QgsCoordinateReferenceSystem,
+                           QgsCoordinateTransform, QgsField, QgsFields, QgsGml,
+                           QgsMessageLog, QgsPalLayerSettings, QgsProject,
+                           QgsProperty, QgsPropertyCollection,
+                           QgsTextBufferSettings, QgsTextFormat,
+                           QgsVectorLayer, QgsVectorLayerSimpleLabeling)
+    from qgis.gui import QgsHighlight, QgsMapToolEmitPoint
+    from qgis.PyQt import uic
+    from qgis.PyQt.QtCore import (QCoreApplication, QSize, Qt, QUrl,
+                                  QVariant, pyqtSignal)
+    from qgis.PyQt.QtGui import QColor, QFont, QIcon, QPixmap
+    from qgis.PyQt.QtNetwork import QNetworkRequest
+    from qgis.PyQt.QtWidgets import (QAction, QApplication, QDockWidget,
+                                     QHeaderView, QMenu, QMessageBox,
+                                     QTableWidgetItem, QToolButton)
+    from qgis.utils import iface
+    
+    import configparser
+    import hashlib
+    import json
+    import os
+    import re
+    import sys
+    import urllib
+    import webbrowser
+    from collections import OrderedDict
+    from io import BytesIO
+    from lxml import etree
 
-from qgis.core import (Qgis,
-                       QgsBlockingNetworkRequest,
-                       QgsCoordinateReferenceSystem,
-                       QgsCoordinateTransform,
-                       QgsField,
-                       QgsFields,
-                       QgsGml,
-                       QgsMessageLog,
-                       QgsPalLayerSettings,
-                       QgsProject,
-                       QgsProperty,
-                       QgsPropertyCollection,
-                       QgsRectangle,
-                       QgsSimpleMarkerSymbolLayer,
-                       QgsTextBufferSettings,
-                       QgsTextFormat,
-                       QgsVectorLayer,
-                       QgsVectorLayerSimpleLabeling)
-
-from qgis.gui import QgsHighlight, QgsMapToolEmitPoint
-from qgis.utils import iface
-
-from qgis.PyQt import uic
-from qgis.PyQt.QtCore import (pyqtSignal,
-                              QCoreApplication,
-                              Qt,
-                              QSettings,
-                              QSize,
-                              QUrl,
-                              QVariant)
-
-from qgis.PyQt.QtGui import QColor, QFont, QIcon, QPixmap
-from qgis.PyQt.QtNetwork import QNetworkRequest
-from qgis.PyQt.QtWidgets import (QAction,
-                                 QApplication,
-                                 QDockWidget,
-                                 QHeaderView,
-                                 QMenu,
-                                 QMessageBox,
-                                 QTableWidgetItem,
-                                 QToolButton)
+except (ModuleNotFoundError, ImportError) as module_error:
+    error_string = f"[Flurstücksfinder NRW Fehler]: {module_error.args[0]} - Modul kann nicht importiert werden. Bitte überprüfen Sie, ob dieses Python-Modul installiert ist!"
+    QgsMessageLog.logMessage(error_string, "Flurstücksfinder NRW", level=Qgis.Critical)
+    iface.messageBar().pushMessage(error_string, level=Qgis.Critical)
+    sys.exit(error_string)
 
 # Initialize Qt resources from file resources_rc.py
 from .resources_rc import *
