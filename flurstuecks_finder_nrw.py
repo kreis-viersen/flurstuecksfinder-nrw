@@ -29,7 +29,8 @@ try:
                            QgsMessageLog, QgsPalLayerSettings, QgsProject,
                            QgsProperty, QgsPropertyCollection,
                            QgsTextBufferSettings, QgsTextFormat,
-                           QgsVectorLayer, QgsVectorLayerSimpleLabeling)
+                           QgsVectorLayer, QgsVectorLayerSimpleLabeling,
+                           QgsWkbTypes)
     from qgis.gui import QgsHighlight, QgsMapToolEmitPoint
     from qgis.PyQt import uic
     from qgis.PyQt.QtCore import (QCoreApplication, QSize, Qt, QUrl,
@@ -1151,7 +1152,7 @@ class FlurstuecksFinderNRW:
                 FlurstuecksFinderNRW.highlight2.setFillColor(QColor(0, 0, 0, 0))
                 FlurstuecksFinderNRW.highlight2.setWidth(3)
             else:
-                self.canvas.flashGeometries([self.geom.convertToType(1)], self.layer.crs(
+                self.canvas.flashGeometries([self.geom.convertToType(QgsWkbTypes.LineGeometry)], self.layer.crs(
                 ), QColor(255, 0, 0, 255), QColor(0, 0, 0, 0), int(5), int(500))
             self.canvas.refresh()
             self.TableFlurstueckFields()
