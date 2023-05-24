@@ -23,25 +23,42 @@
 """
 
 try:
-    from qgis.core import (Qgis, QgsBlockingNetworkRequest,
-                           QgsCoordinateReferenceSystem,
-                           QgsCoordinateTransform, QgsField, QgsFields, QgsGml,
-                           QgsMessageLog, QgsPalLayerSettings, QgsProject,
-                           QgsProperty, QgsPropertyCollection,
-                           QgsTextBufferSettings, QgsTextFormat,
-                           QgsVectorLayer, QgsVectorLayerSimpleLabeling,
-                           QgsWkbTypes)
+    from qgis.core import (
+        Qgis,
+        QgsBlockingNetworkRequest,
+        QgsCoordinateReferenceSystem,
+        QgsCoordinateTransform,
+        QgsField,
+        QgsFields,
+        QgsGml,
+        QgsMessageLog,
+        QgsPalLayerSettings,
+        QgsProject,
+        QgsProperty,
+        QgsPropertyCollection,
+        QgsTextBufferSettings,
+        QgsTextFormat,
+        QgsVectorLayer,
+        QgsVectorLayerSimpleLabeling,
+        QgsWkbTypes,
+    )
     from qgis.gui import QgsHighlight, QgsMapToolEmitPoint
     from qgis.PyQt import uic
-    from qgis.PyQt.QtCore import (QCoreApplication, QSize, Qt, QUrl,
-                                  QVariant, pyqtSignal)
+    from qgis.PyQt.QtCore import QCoreApplication, QSize, Qt, QUrl, QVariant, pyqtSignal
     from qgis.PyQt.QtGui import QColor, QFont, QIcon, QPixmap
     from qgis.PyQt.QtNetwork import QNetworkRequest
-    from qgis.PyQt.QtWidgets import (QAction, QApplication, QDockWidget,
-                                     QHeaderView, QMenu, QMessageBox,
-                                     QTableWidgetItem, QToolButton)
+    from qgis.PyQt.QtWidgets import (
+        QAction,
+        QApplication,
+        QDockWidget,
+        QHeaderView,
+        QMenu,
+        QMessageBox,
+        QTableWidgetItem,
+        QToolButton,
+    )
     from qgis.utils import iface
-    
+
     import configparser
     import hashlib
     import json
@@ -74,16 +91,19 @@ qgis_version = Qgis.QGIS_VERSION.split("-")[0]
 
 # Defines the GUI file for the dock widget
 sys.path.append(os.path.dirname(__file__))
-FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'flurstuecks_finder_nrw_dockwidget_base.ui'))
+FORM_CLASS, _ = uic.loadUiType(
+    os.path.join(os.path.dirname(__file__), "flurstuecks_finder_nrw_dockwidget_base.ui")
+)
+
 
 class FlurstuecksFinderNRWDockWidget(QDockWidget, FORM_CLASS):
-    """ Initialize the dockwidget """
+    """Initialize the dockwidget"""
+
     closingPlugin = pyqtSignal()
     keyPressed = pyqtSignal(int)
 
     def __init__(self, parent=None):
-        """ Initializes the GUI of the dock widget """
+        """Initializes the GUI of the dock widget"""
         super(FlurstuecksFinderNRWDockWidget, self).__init__(parent)
         self.setupUi(self)
 
@@ -99,17 +119,21 @@ class FlurstuecksFinderNRWDockWidget(QDockWidget, FORM_CLASS):
         self.closingPlugin.emit()
         event.accept()
 
+
 # ---------------------------------------------------------------------------- #
 # Class of the actual plugin                                                   #
 # ---------------------------------------------------------------------------- #
 
+
 class FlurstuecksFinderNRW:
-    """ Main plugin class """
+    """Main plugin class"""
+
     closingPlugin = pyqtSignal()
     highlight = None
     highlight2 = None
+
     def __init__(self, iface):
-        """ Ininitalsiert the plugin class """
+        """Ininitalsiert the plugin class"""
         # QGIS Interface
         self.iface = iface
 
@@ -126,15 +150,15 @@ class FlurstuecksFinderNRW:
         self.config = configparser.ConfigParser()
 
         # Initializes the config file
-        self.config_file = os.path.join(self.plugin_dir, 'settings.ini')
+        self.config_file = os.path.join(self.plugin_dir, "settings.ini")
 
         # Writes by default the district Viersen as a district in the Config,
         # if the file does not exist
         if not os.path.isfile(self.config_file):
             # Disabled to to issues in QGIS 3.20.1
-            self.config['DEFAULT']['nrw'] = 'True'
-            self.config['DEFAULT']['katasteramt'] = 'None'
-            with open(self.config_file, 'w', encoding='UTF-8') as file:
+            self.config["DEFAULT"]["nrw"] = "True"
+            self.config["DEFAULT"]["katasteramt"] = "None"
+            with open(self.config_file, "w", encoding="UTF-8") as file:
                 self.config.write(file)
 
         # Initialization of various variables
@@ -151,29 +175,28 @@ class FlurstuecksFinderNRW:
         # Reads out the config file and sets the variable area to the current value
         # current value from the Conig file
         self.config.read(self.config_file)
-        if self.config.has_option('', 'nrw'):
-            self.nrw = self.config['DEFAULT']['nrw']
-            if self.nrw == 'True':
+        if self.config.has_option("", "nrw"):
+            self.nrw = self.config["DEFAULT"]["nrw"]
+            if self.nrw == "True":
                 self.nrw = True
-            elif self.nrw == 'False':
+            elif self.nrw == "False":
                 self.nrw = False
-        if self.config.has_option('', 'katasteramt'):
-            self.katasteramt = self.config['DEFAULT']['katasteramt']
-            if self.katasteramt == 'None':
+        if self.config.has_option("", "katasteramt"):
+            self.katasteramt = self.config["DEFAULT"]["katasteramt"]
+            if self.katasteramt == "None":
                 self.katasteramt = None
         else:
             self.katasteramt = None
         # Initializes the path to the icons
-        self.icon_path = ':/plugins/flurstuecks_finder_nrw/icons/'
+        self.icon_path = ":/plugins/flurstuecks_finder_nrw/icons/"
 
         # Initializes the cache directory and creates it if necessary.
-        self.cache_dir = os.path.join(self.plugin_dir, 'cache')
+        self.cache_dir = os.path.join(self.plugin_dir, "cache")
         if not os.path.isdir(self.cache_dir):
             try:
                 os.mkdir(self.cache_dir)
             except OSError:
-                print(
-                    f'Verzeichnis {self.cache_dir} konnte nicht erstellt werden')
+                print(f"Verzeichnis {self.cache_dir} konnte nicht erstellt werden")
 
         # Initializes a list of 'actions' that will be triggered,
         # when the plugin buttons are pressed
@@ -187,8 +210,8 @@ class FlurstuecksFinderNRW:
         self.tool_btn_action = self.iface.addToolBarWidget(self.toolbar_button)
 
         # Initialize plugin menu entry with icon
-        self.menu2 = QMenu(self.tr(u'&Flurstücksfinder NRW'))
-        self.menu2.setIcon(QIcon(self.icon_path + 'finder.png'))
+        self.menu2 = QMenu(self.tr("&Flurstücksfinder NRW"))
+        self.menu2.setIcon(QIcon(self.icon_path + "finder.png"))
         self.iface.pluginMenu().addMenu(self.menu2)
 
         # At initialization the plugin is not yet active
@@ -197,20 +220,31 @@ class FlurstuecksFinderNRW:
 
         # Definition of a mouse click function (returns x and y)
         self.mouse_click = QgsMapToolEmitPoint(self.canvas)
-        self.mouse_click.canvasClicked.connect(lambda xy: self.SearchFlurstueck('clicked', xy))
+        self.mouse_click.canvasClicked.connect(
+            lambda xy: self.SearchFlurstueck("clicked", xy)
+        )
         self.maptool = self.mouse_click
         self.maptool.setCursor(Qt.WhatsThisCursor)
         # Variable for the first start of the plugin
         self.first_start = True
 
     def tr(self, message):
-        """ Function to translate """
-        return QCoreApplication.translate('FlurstuecksFinderNRW', message)
+        """Function to translate"""
+        return QCoreApplication.translate("FlurstuecksFinderNRW", message)
 
-    def AddAction(self, icon_path, text, callback, enabled_flag=True,
-                  add_to_menu=True, add_to_toolbar=True, status_tip=None,
-                  whats_this=None, parent=None):
-        """ Inserts actions into the plugin """
+    def AddAction(
+        self,
+        icon_path,
+        text,
+        callback,
+        enabled_flag=True,
+        add_to_menu=True,
+        add_to_toolbar=True,
+        status_tip=None,
+        whats_this=None,
+        parent=None,
+    ):
+        """Inserts actions into the plugin"""
         icon = QIcon(icon_path)
         action = QAction(icon, text, parent)
         action.triggered.connect(callback)
@@ -227,32 +261,36 @@ class FlurstuecksFinderNRW:
         return action
 
     def initGui(self):
-        """ Creates the toolbar icons in the QGIS GUI and the dockwidget"""
+        """Creates the toolbar icons in the QGIS GUI and the dockwidget"""
         # Action for opening the normal Flurstück finder GUI
         self.AddAction(
-            icon_path=self.icon_path + 'finder.png',
-            text=self.tr(u'Flurstücksfinder NRW öffnen'),
+            icon_path=self.icon_path + "finder.png",
+            text=self.tr("Flurstücksfinder NRW öffnen"),
             callback=self.run,
-            parent=self.iface.mainWindow())
+            parent=self.iface.mainWindow(),
+        )
 
         # Action for retrieving a Flurstück by click
         self.AddAction(
-            icon_path=self.icon_path + 'click.png',
-            text=self.tr(u'Flurstück mit Klick finden'),
+            icon_path=self.icon_path + "click.png",
+            text=self.tr("Flurstück mit Klick finden"),
             callback=self.SearchFlurstueckClicked,
-            parent=self.iface.mainWindow())
+            parent=self.iface.mainWindow(),
+        )
 
         # Action for showing about message box
         self.AddAction(
-            icon_path=self.icon_path + 'info.png',
-            text=self.tr(u'Über Flurstücksfinder NRW'),
+            icon_path=self.icon_path + "info.png",
+            text=self.tr("Über Flurstücksfinder NRW"),
             callback=self.about,
-            parent=self.iface.mainWindow())
+            parent=self.iface.mainWindow(),
+        )
 
         # Sets the default action for the button menu
         # Normal search mask as default
-        default_action = [a for a in self.actions if a.text()
-                          == 'Flurstücksfinder NRW öffnen'][0]
+        default_action = [
+            a for a in self.actions if a.text() == "Flurstücksfinder NRW öffnen"
+        ][0]
         self.toolbar_button.setDefaultAction(default_action)
 
         # Actions and buttons have been added, now
@@ -262,115 +300,152 @@ class FlurstuecksFinderNRW:
 
         # Text from Gemarkung combo box into text field
         self.dockwidget.cmb_gemarkung_name.activated.connect(
-            self.MatchComboBoxesTextFields)
+            self.MatchComboBoxesTextFields
+        )
         # Text from Gemarkung key combo box into text field
         self.dockwidget.cmb_gemarkung_id.activated.connect(
-            self.MatchComboBoxesTextFields)
+            self.MatchComboBoxesTextFields
+        )
         # Text from Fluren combo box into text field
-        self.dockwidget.cmb_flur_nr.activated.connect(
-            self.MatchComboBoxesTextFields)
+        self.dockwidget.cmb_flur_nr.activated.connect(self.MatchComboBoxesTextFields)
         # Text from Flurstücke combo box into text field
-        self.dockwidget.cmb_flurstueck.activated.connect(
-            self.MatchComboBoxesTextFields)
+        self.dockwidget.cmb_flurstueck.activated.connect(self.MatchComboBoxesTextFields)
         # Actions that will be executed when the index of the
         # comboboxes changes (comparison of the name of the
         # Gemarkungsname with the Gemarkungs-Schlüssel )
         self.dockwidget.cmb_gemarkung_name.currentIndexChanged.connect(
             lambda: self.dockwidget.cmb_gemarkung_id.setCurrentIndex(
                 self.dockwidget.cmb_gemarkung_id.findText(
-                    re.sub("[^0-9]", "", self.dockwidget.cmb_gemarkung_name.currentText()),
-                    Qt.MatchFixedString)))
+                    re.sub(
+                        "[^0-9]", "", self.dockwidget.cmb_gemarkung_name.currentText()
+                    ),
+                    Qt.MatchFixedString,
+                )
+            )
+        )
         self.dockwidget.cmb_gemarkung_id.currentIndexChanged.connect(
             lambda: self.dockwidget.cmb_gemarkung_name.setCurrentIndex(
                 self.dockwidget.cmb_gemarkung_name.findText(
-                    self.dockwidget.cmb_gemarkung_id.currentText(),
-                    Qt.MatchContains)))
+                    self.dockwidget.cmb_gemarkung_id.currentText(), Qt.MatchContains
+                )
+            )
+        )
         # Actions when the combo boxes are clicked/activated
         # When Gemarkung is activated, the combo box for fluren is filled.
         self.dockwidget.cmb_katasteramt.currentIndexChanged.connect(self.SetKatasteramt)
-        self.dockwidget.cmb_katasteramt.currentIndexChanged.connect(self.FillComboBoxGemarkung)
-        self.dockwidget.cmb_gemarkung_name.currentIndexChanged.connect(self.FillComboBoxFluren)
-        self.dockwidget.cmb_flur_nr.currentIndexChanged.connect(self.FillComboBoxFlurstuecke)
+        self.dockwidget.cmb_katasteramt.currentIndexChanged.connect(
+            self.FillComboBoxGemarkung
+        )
+        self.dockwidget.cmb_gemarkung_name.currentIndexChanged.connect(
+            self.FillComboBoxFluren
+        )
+        self.dockwidget.cmb_flur_nr.currentIndexChanged.connect(
+            self.FillComboBoxFlurstuecke
+        )
 
         # Button for Flurstück search via Flurstückkennzeichen (Gemarkung-Flur-Flurstück)
-        self.dockwidget.btn_suchen_flurstueck_nr.clicked.connect(lambda:
-            self.SearchFlurstueck('flstkennz', None))
+        self.dockwidget.btn_suchen_flurstueck_nr.clicked.connect(
+            lambda: self.SearchFlurstueck("flstkennz", None)
+        )
         # Button for Flurstück search via ALKIS ID
-        self.dockwidget.btn_suchen_alkis_id.clicked.connect(lambda:
-            self.SearchFlurstueck('alkisid', None))
+        self.dockwidget.btn_suchen_alkis_id.clicked.connect(
+            lambda: self.SearchFlurstueck("alkisid", None)
+        )
         # Button for Flurstück search via Flurstückkennzeichen
-        self.dockwidget.btn_suchen_flstkennzlang.clicked.connect(lambda:
-            self.SearchFlurstueck('flstkennzlang', None))
+        self.dockwidget.btn_suchen_flstkennzlang.clicked.connect(
+            lambda: self.SearchFlurstueck("flstkennzlang", None)
+        )
         # Search the Flurstück if the last combobox is activated
-        self.dockwidget.cmb_flurstueck.activated.connect(lambda: self.SearchFlurstueck('flstkennz', None))
+        self.dockwidget.cmb_flurstueck.activated.connect(
+            lambda: self.SearchFlurstueck("flstkennz", None)
+        )
         # button adds or deletes the Flurstück polygon
         self.dockwidget.btn_add_flurstueck.clicked.connect(
-            lambda: self.AddFlurstueckLayer(self.layer))
+            lambda: self.AddFlurstueckLayer(self.layer)
+        )
         # button opens the geoportal Niederrhein
-        self.dockwidget.btn_open_portal.clicked.connect(lambda: self.OpenBrowser('portal'))
+        self.dockwidget.btn_open_portal.clicked.connect(
+            lambda: self.OpenBrowser("portal")
+        )
         # button opens JOSM
-        self.dockwidget.btn_open_josm.clicked.connect(lambda: self.OpenBrowser('josm'))
+        self.dockwidget.btn_open_josm.clicked.connect(lambda: self.OpenBrowser("josm"))
         # button opens JOSM
-        self.dockwidget.btn_open_id.clicked.connect(lambda: self.OpenBrowser('id'))
+        self.dockwidget.btn_open_id.clicked.connect(lambda: self.OpenBrowser("id"))
         # Execute the search when the return key is pressed
         self.dockwidget.keyPressed.connect(self.KeyPressed)
         self.dockwidget.txt_gemarkung_flur_flurstueck.textChanged.connect(
-            lambda text: self.TextFieldChanged(text, self.dockwidget.btn_suchen_flurstueck_nr))
+            lambda text: self.TextFieldChanged(
+                text, self.dockwidget.btn_suchen_flurstueck_nr
+            )
+        )
         self.dockwidget.txt_alkis_id.textChanged.connect(
-            lambda text: self.TextFieldChanged(text, self.dockwidget.btn_suchen_alkis_id))
+            lambda text: self.TextFieldChanged(
+                text, self.dockwidget.btn_suchen_alkis_id
+            )
+        )
         self.dockwidget.txt_flstkennzlang.textChanged.connect(
-            lambda text: self.TextFieldChanged(text, self.dockwidget.btn_suchen_flstkennzlang))
+            lambda text: self.TextFieldChanged(
+                text, self.dockwidget.btn_suchen_flstkennzlang
+            )
+        )
         if self.nrw is False:
             self.dockwidget.btn_open_portal.setToolTip(
-                'Öffnet die Flurstücks-Position im Geoportal Niederrhein')
+                "Öffnet die Flurstücks-Position im Geoportal Niederrhein"
+            )
         else:
             self.dockwidget.btn_open_portal.setToolTip(
-                'Öffnet die Flurstücks-Position in TIM-Online')
+                "Öffnet die Flurstücks-Position in TIM-Online"
+            )
 
         # QTableWidget custom action when right-clicking with the mouse, calls a function
-        self.dockwidget.tbl_flurstueck.setContextMenuPolicy(
-            Qt.CustomContextMenu)
+        self.dockwidget.tbl_flurstueck.setContextMenuPolicy(Qt.CustomContextMenu)
         self.dockwidget.tbl_flurstueck.customContextMenuRequested.connect(
-            self.CopyTableCell)
+            self.CopyTableCell
+        )
 
-# ---------------------------------------------------------------------------- #
+    # ---------------------------------------------------------------------------- #
 
     def onClosePlugin(self):
-        """ Deletes all items of the plugin when it is closed """
+        """Deletes all items of the plugin when it is closed"""
         self.dockwidget.closingPlugin.disconnect(self.onClosePlugin)
         self.first_start = True
         self.pluginIsActive = False
 
     def unload(self):
-        """ Removes the menu items and the buttons """
+        """Removes the menu items and the buttons"""
         for action in self.actions:
-            self.iface.removePluginMenu(
-                self.tr(u'&Flurstücksfinder NRW'),
-                action)
+            self.iface.removePluginMenu(self.tr("&Flurstücksfinder NRW"), action)
             self.iface.removeToolBarIcon(action)
         self.iface.removeToolBarIcon(self.tool_btn_action)
         self.menu2.deleteLater()
 
     def RemoveHighlights(self):
-        """ This removes previously created map highlights (red markers) """
-        if hasattr(FlurstuecksFinderNRW, 'highlight'):
+        """This removes previously created map highlights (red markers)"""
+        if hasattr(FlurstuecksFinderNRW, "highlight"):
             self.iface.mapCanvas().scene().removeItem(self.highlight)
             self.iface.mapCanvas().scene().removeItem(self.highlight2)
-# ---------------------------------------------------------------------------- #
+
+    # ---------------------------------------------------------------------------- #
 
     def KeyPressed(self, key):
-        """ Perform the search action of Return key is pressed """
+        """Perform the search action of Return key is pressed"""
         # Check whether enter or return key is pressed
         if key in [Qt.Key_Return, Qt.Key_Enter]:
-            if len(self.dockwidget.txt_alkis_id.text()) != 0\
-                    and self.dockwidget.txt_alkis_id.hasFocus():
-                self.SearchFlurstueck('alkisid', None)
-            elif len(self.dockwidget.txt_gemarkung_flur_flurstueck.text()) != 0\
-                    and self.dockwidget.txt_gemarkung_flur_flurstueck.hasFocus():
-                self.SearchFlurstueck('flstkennz', None)
-            elif len(self.dockwidget.txt_flstkennzlang.text()) != 0\
-                    and self.dockwidget.txt_flstkennzlang.hasFocus():
-                self.SearchFlurstueck('flstkennzlang', None)
+            if (
+                len(self.dockwidget.txt_alkis_id.text()) != 0
+                and self.dockwidget.txt_alkis_id.hasFocus()
+            ):
+                self.SearchFlurstueck("alkisid", None)
+            elif (
+                len(self.dockwidget.txt_gemarkung_flur_flurstueck.text()) != 0
+                and self.dockwidget.txt_gemarkung_flur_flurstueck.hasFocus()
+            ):
+                self.SearchFlurstueck("flstkennz", None)
+            elif (
+                len(self.dockwidget.txt_flstkennzlang.text()) != 0
+                and self.dockwidget.txt_flstkennzlang.hasFocus()
+            ):
+                self.SearchFlurstueck("flstkennzlang", None)
 
     def PushMessage(self, message, level):
         self.iface.messageBar().clearWidgets()
@@ -378,45 +453,50 @@ class FlurstuecksFinderNRW:
         self.iface.mainWindow().repaint()
 
     def ShowMessage(self, art, meldung):
-        """ Creates a message for the user """
+        """Creates a message for the user"""
         mb = QMessageBox()
         mb.setWindowFlags(Qt.WindowStaysOnTopHint)
-        if art == 'Frage':
-            mb.setWindowTitle('Frage')
+        if art == "Frage":
+            mb.setWindowTitle("Frage")
             mb.setIcon(QMessageBox.Question)
-            mb.addButton('Ja', mb.AcceptRole)
-            mb.addButton('Nein', mb.RejectRole)
-        elif art == 'Fehler':
-            mb.setWindowTitle('Fehler')
+            mb.addButton("Ja", mb.AcceptRole)
+            mb.addButton("Nein", mb.RejectRole)
+        elif art == "Fehler":
+            mb.setWindowTitle("Fehler")
             mb.setIcon(QMessageBox.Critical)
-            mb.addButton('OK', mb.AcceptRole)
-        elif art == 'Warning':
-            mb.setWindowTitle('Flurstücksfinder NRW Warnung')
-            mb.setText(f'Es ist ein Fehler aufgetreten!\n\n{meldung}')
+            mb.addButton("OK", mb.AcceptRole)
+        elif art == "Warning":
+            mb.setWindowTitle("Flurstücksfinder NRW Warnung")
+            mb.setText(f"Es ist ein Fehler aufgetreten!\n\n{meldung}")
             mb.setIcon(QMessageBox.Warning)
-            mb.addButton('Okay', mb.AcceptRole)
-        elif art == 'Info':
-            mb.setWindowTitle('Flurstücksfinder NRW Info')
+            mb.addButton("Okay", mb.AcceptRole)
+        elif art == "Info":
+            mb.setWindowTitle("Flurstücksfinder NRW Info")
             mb.setIcon(QMessageBox.Information)
-            mb.addButton('Okay', mb.AcceptRole)
+            mb.addButton("Okay", mb.AcceptRole)
         mb.setText(meldung)
         return mb
 
-# ---------------------------------------------------------------------------- #
-# Functions for buttons                                                        #
-# ---------------------------------------------------------------------------- #
+    # ---------------------------------------------------------------------------- #
+    # Functions for buttons                                                        #
+    # ---------------------------------------------------------------------------- #
 
     def InitRadioButtons(self):
-        """ Reads out the config file and sets the radio buttons """
+        """Reads out the config file and sets the radio buttons"""
         check_button = None
         self.dockwidget.rb_group.buttonToggled.connect(self.RadioButtonChanged)
         if self.nrw is False:
             if self.katasteramt:
-                check_button = [b for b in self.dockwidget.rb_group.buttons()
-                                if b.text() == self.katasteramt]
+                check_button = [
+                    b
+                    for b in self.dockwidget.rb_group.buttons()
+                    if b.text() == self.katasteramt
+                ]
                 self.dockwidget.cmb_katasteramt.setEnabled(False)
         else:
-            check_button = [b for b in self.dockwidget.rb_group.buttons() if b.text() == 'NRW']
+            check_button = [
+                b for b in self.dockwidget.rb_group.buttons() if b.text() == "NRW"
+            ]
             self.dockwidget.cmb_katasteramt.setEnabled(True)
 
         if check_button is not None:
@@ -425,62 +505,70 @@ class FlurstuecksFinderNRW:
         self.dockwidget.rb_group.setExclusive(True)
 
     def RadioButtonChanged(self, button, checked):
-        """ Checks the setting of the radio buttons
-        and writes the setting to a config file """
+        """Checks the setting of the radio buttons
+        and writes the setting to a config file"""
         self.ResetComboBoxes()
         self.ResetComboBoxesIndex()
         self.ClearTextFields()
-        if checked is True and button.text() != 'NRW':
+        if checked is True and button.text() != "NRW":
             self.nrw = False
             self.katasteramt = button.text()
-            self.config['DEFAULT']['nrw'] = 'False'
-            self.config['DEFAULT']['katasteramt'] = self.katasteramt
+            self.config["DEFAULT"]["nrw"] = "False"
+            self.config["DEFAULT"]["katasteramt"] = self.katasteramt
             self.dockwidget.cmb_katasteramt.setEnabled(False)
             self.dockwidget.cmb_katasteramt.setCurrentIndex(-1)
-            self.dockwidget.id_suchen_gbox.setTitle(f'ID in {self.katasteramt} suchen')
-            self.dockwidget.flurstueck_suchen_gbox.setTitle(f'Flurstück in {self.katasteramt} suchen')
+            self.dockwidget.id_suchen_gbox.setTitle(f"ID in {self.katasteramt} suchen")
+            self.dockwidget.flurstueck_suchen_gbox.setTitle(
+                f"Flurstück in {self.katasteramt} suchen"
+            )
             self.ChangePushButtonsIcons("masterportal")
             self.FillComboBoxGemarkung()
-        elif checked is True and button.text() == 'NRW':
+        elif checked is True and button.text() == "NRW":
             self.nrw = True
-            self.config['DEFAULT']['nrw'] = 'True'
+            self.config["DEFAULT"]["nrw"] = "True"
             self.dockwidget.cmb_katasteramt.setEnabled(True)
-            self.dockwidget.id_suchen_gbox.setTitle('ID NRW-weit suchen')
-            self.dockwidget.flurstueck_suchen_gbox.setTitle(f'Bitte Katasteramt im Reiter Einstellung wählen')
+            self.dockwidget.id_suchen_gbox.setTitle("ID NRW-weit suchen")
+            self.dockwidget.flurstueck_suchen_gbox.setTitle(
+                f"Bitte Katasteramt im Reiter Einstellung wählen"
+            )
             self.ChangePushButtonsIcons("timonline")
             self.FillComboBoxKatasteramt()
         if checked is True:
             self.GetCRS()
             if os.path.isfile(self.config_file):
-                with open(self.config_file, 'w+', encoding='UTF-8') as file:
+                with open(self.config_file, "w+", encoding="UTF-8") as file:
                     self.config.write(file)
 
     def ChangePushButtonsIcons(self, icon):
-        """ Depending on whether a Flurstück polygon
-        has already been added, the icon will be changed """
-        if icon == 'remove':
+        """Depending on whether a Flurstück polygon
+        has already been added, the icon will be changed"""
+        if icon == "remove":
             iconRemove = QIcon()
-            iconRemove.addPixmap(QPixmap(os.path.join(self.icon_path, 'remove.png')))
+            iconRemove.addPixmap(QPixmap(os.path.join(self.icon_path, "remove.png")))
             self.dockwidget.btn_add_flurstueck.setIcon(iconRemove)
             self.dockwidget.btn_add_flurstueck.setIconSize(QSize(25, 25))
             self.dockwidget.btn_add_flurstueck.setToolTip(
-                'Durch Klicken wird das Flurstückpolygon entfernt')
-        elif icon == 'add':
+                "Durch Klicken wird das Flurstückpolygon entfernt"
+            )
+        elif icon == "add":
             iconAdd = QIcon()
-            iconAdd.addPixmap(QPixmap(os.path.join(self.icon_path, 'add.png')))
+            iconAdd.addPixmap(QPixmap(os.path.join(self.icon_path, "add.png")))
             self.dockwidget.btn_add_flurstueck.setIcon(iconAdd)
             self.dockwidget.btn_add_flurstueck.setIconSize(QSize(25, 25))
             self.dockwidget.btn_add_flurstueck.setToolTip(
-                'Durch Klicken wird das Flurstückpolygon hinzugefügt')
-        elif icon == 'masterportal':
+                "Durch Klicken wird das Flurstückpolygon hinzugefügt"
+            )
+        elif icon == "masterportal":
             self.dockwidget.btn_open_portal.setToolTip(
-                'Öffnet das Flurstück im Geoportal Niederrhein')
-        elif icon == 'timonline':
+                "Öffnet das Flurstück im Geoportal Niederrhein"
+            )
+        elif icon == "timonline":
             self.dockwidget.btn_open_portal.setToolTip(
-                'Öffnet das Flurstück in TIM-Online')
+                "Öffnet das Flurstück in TIM-Online"
+            )
 
     def EnablePushButtons(self):
-        """ Activates the push buttons """
+        """Activates the push buttons"""
         # Flurstücke can only be added if they have been searched for successfully
         self.dockwidget.btn_add_flurstueck.setEnabled(True)
         # Opens the geoportal Niederhein
@@ -496,7 +584,7 @@ class FlurstuecksFinderNRW:
         self.dockwidget.btn_open_id.setEnabled(True)
 
     def DisablePushButtons(self):
-        """ Disables the push buttons """
+        """Disables the push buttons"""
         # Flurstücke can only be added if they have been searched for successfully
         self.dockwidget.btn_add_flurstueck.setEnabled(False)
         # JOSM can only be used when a Flurstück has been searched for
@@ -511,48 +599,51 @@ class FlurstuecksFinderNRW:
         self.dockwidget.btn_suchen_alkis_id.setEnabled(False)
         self.dockwidget.btn_suchen_flurstueck_nr.setEnabled(False)
         self.dockwidget.btn_suchen_flstkennzlang.setEnabled(False)
-# ---------------------------------------------------------------------------- #
-# Functions for direct interaction with the WFS                                #
-# ---------------------------------------------------------------------------- #
+
+    # ---------------------------------------------------------------------------- #
+    # Functions for direct interaction with the WFS                                #
+    # ---------------------------------------------------------------------------- #
 
     def GetBaseURL(self):
-        """ Used to select the region to address the respective WFS service """
+        """Used to select the region to address the respective WFS service"""
         base_url = None
-        wfs_arg = ''
-        katasteramt = ''
+        wfs_arg = ""
+        katasteramt = ""
         if self.nrw is False:
             if self.katasteramt:
                 katasteramt = self.katasteramt
-                if 'Krefeld' in katasteramt:
-                    wfs_arg = 's'
-                elif 'Wesel' in katasteramt or 'Viersen' in katasteramt or 'Kleve' in katasteramt:
-                    wfs_arg = 'k'
+                if "Krefeld" in katasteramt:
+                    wfs_arg = "s"
+                elif (
+                    "Wesel" in katasteramt
+                    or "Viersen" in katasteramt
+                    or "Kleve" in katasteramt
+                ):
+                    wfs_arg = "k"
                 katasteramt = katasteramt.replace("Kreis ", "").replace("Stadt ", "")
                 katasteramt = katasteramt[0:3].lower()
                 wfs_arg = wfs_arg + katasteramt
-                base_url = ('https://geoservices.krzn.de/security-proxy/'
-                    f'services/wfs_{wfs_arg}_alkis_adv_vereinfacht?')
+                base_url = (
+                    "https://geoservices.krzn.de/security-proxy/"
+                    f"services/wfs_{wfs_arg}_alkis_adv_vereinfacht?"
+                )
         elif self.nrw is True:
-            base_url = 'https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht?'
+            base_url = "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht?"
 
         return base_url
 
     def GetCRS(self):
-        """ Get available CRS from WFS """
+        """Get available CRS from WFS"""
         # WFS Request URL
         base_url = self.GetBaseURL()
         self.crs_dict.clear()
-        param = {
-            'service': 'WFS',
-            'version': '2.0.0',
-            'request': 'GetCapabilities'
-        }
+        param = {"service": "WFS", "version": "2.0.0", "request": "GetCapabilities"}
 
         if base_url is not None:
             url = base_url + urllib.parse.unquote_plus(urllib.parse.urlencode(param))
             results = None
             request = QgsBlockingNetworkRequest()
-            request.get(QNetworkRequest(QUrl(url)),True)
+            request.get(QNetworkRequest(QUrl(url)), True)
             reply = request.reply()
             if reply.attribute(QNetworkRequest.HttpStatusCodeAttribute) == 200:
                 tree = etree.parse(BytesIO(reply.content()))
@@ -560,24 +651,27 @@ class FlurstuecksFinderNRW:
                 nsmap = root.nsmap
                 if None in nsmap.keys():
                     del nsmap[None]
-                results = root.find(".//ows:Parameter[@name='srsName']/ows:AllowedValues", nsmap)
+                results = root.find(
+                    ".//ows:Parameter[@name='srsName']/ows:AllowedValues", nsmap
+                )
 
                 if results is not None:
                     results = results.getchildren()
                     results = [result.text for result in results]
             else:
                 mb = self.ShowMessage(
-                    'Fehler', 'Konnte verfügbare KBS vom WFS nicht ermitteln!')
-                mb.setDetailedText('Die Anfrage an folgende URL schlug fehl:\n\n' + url)
+                    "Fehler", "Konnte verfügbare KBS vom WFS nicht ermitteln!"
+                )
+                mb.setDetailedText("Die Anfrage an folgende URL schlug fehl:\n\n" + url)
                 mb.exec()
 
             if results:
                 for idx, result in enumerate(results):
-                    epsg = result.split('def:crs:')[1].replace('::', ':')
-                    self.crs_dict[idx] = {'uri': result, 'epsg': epsg}
+                    epsg = result.split("def:crs:")[1].replace("::", ":")
+                    self.crs_dict[idx] = {"uri": result, "epsg": epsg}
 
     def CheckCRS(self):
-        """ Checks the CRS """
+        """Checks the CRS"""
         crs_list = {}
         crs = None
 
@@ -587,176 +681,204 @@ class FlurstuecksFinderNRW:
         # If a CRS is defined, then it is checked whether this is contained in the list
         # of the allowed WFS CRS, if not: error message
         if crs and self.crs_dict:
-            crs_list = [i.get('epsg') for i in self.crs_dict.values()]
-            if crs in [i.get('epsg') for i in self.crs_dict.values()]:
-                self.crs = [i.get('uri') for i in self.crs_dict.values() if i.get('epsg') == crs][0]
-                self.epsg = [i.get('epsg').strip('EPSG:') for i in self.crs_dict.values() if i.get('epsg') == crs][0]
+            crs_list = [i.get("epsg") for i in self.crs_dict.values()]
+            if crs in [i.get("epsg") for i in self.crs_dict.values()]:
+                self.crs = [
+                    i.get("uri") for i in self.crs_dict.values() if i.get("epsg") == crs
+                ][0]
+                self.epsg = [
+                    i.get("epsg").strip("EPSG:")
+                    for i in self.crs_dict.values()
+                    if i.get("epsg") == crs
+                ][0]
             else:
-                crs_string = '\n'.join(crs_list)
+                crs_string = "\n".join(crs_list)
                 mb = self.ShowMessage(
-                    'Info', f'Ihr derzeitig ausgewähltes KBS "{crs}" ist nicht mit dem Flurstücksfinder NRW kompatibel')
-                mb.setDetailedText('Erlaubte KBS: \n' + crs_string)
+                    "Info",
+                    f'Ihr derzeitig ausgewähltes KBS "{crs}" ist nicht mit dem Flurstücksfinder NRW kompatibel',
+                )
+                mb.setDetailedText("Erlaubte KBS: \n" + crs_string)
                 mb.exec()
 
     def GetURL(self, filter, **kwargs):
-        """ Method to create the WFS URL. The arguments are passed to the method
-        and filters are set according to the arguments """
+        """Method to create the WFS URL. The arguments are passed to the method
+        and filters are set according to the arguments"""
         # WFS Request URL
         self.CheckCRS()
         base_url = self.GetBaseURL()
         if base_url is not None:
             param = {
-                'service': 'WFS',
-                'version': '2.0.0',
-                'request': 'GetFeature',
-                'srsname': self.crs
+                "service": "WFS",
+                "version": "2.0.0",
+                "request": "GetFeature",
+                "srsname": self.crs,
             }
 
             if self.nrw is True:
-                param['version'] = '1.1.0'
+                param["version"] = "1.1.0"
 
-            if filter == 'flurstuecke':
+            if filter == "flurstuecke":
                 if self.nrw is False:
-                    param['typename'] = 'gis:alkis_adv_flurstueckpkt'
-                    param['propertyname'] = 'FLSTNRZAE,FLSTNRNEN,FLSTKENNZ'
+                    param["typename"] = "gis:alkis_adv_flurstueckpkt"
+                    param["propertyname"] = "FLSTNRZAE,FLSTNRNEN,FLSTKENNZ"
                 else:
-                    param['typename'] = 'ave:FlurstueckPunkt'
-                    param['propertyname'] = 'ave:flstnrnen'
+                    param["typename"] = "ave:FlurstueckPunkt"
+                    param["propertyname"] = "ave:flstnrnen"
                 flur_id = None
                 gem_nr = kwargs["gem_id"]
                 flur_nr = kwargs["flur_nr"]
                 if gem_nr and flur_nr:
                     flur_nr = flur_nr.zfill(3)
-                    gem_id = '05'+gem_nr
-                    flur_id = gem_id+flur_nr
+                    gem_id = "05" + gem_nr
+                    flur_id = gem_id + flur_nr
                 if flur_id:
                     if self.nrw is False:
-                        param['filter'] = ('<Filter>'
-                                           '<PropertyIsEqualTo>'
-                                           '<ValueReference>FLURSCHL</ValueReference>'
-                                           f'<Literal>{flur_id}</Literal>'
-                                           '</PropertyIsEqualTo>'
-                                           '</Filter>')
+                        param["filter"] = (
+                            "<Filter>"
+                            "<PropertyIsEqualTo>"
+                            "<ValueReference>FLURSCHL</ValueReference>"
+                            f"<Literal>{flur_id}</Literal>"
+                            "</PropertyIsEqualTo>"
+                            "</Filter>"
+                        )
                     else:
-                        param['filter'] = ('<Filter xmlns="http://www.opengis.net/ogc" '
-                                           'xmlns:ave="http://repository.gdi-de.org/schemas/adv/produkt/alkis-vereinfacht/2.0">'
-                                           '<And>'
-                                           '<PropertyIsEqualTo>'
-                                           '<PropertyName>ave:gemaschl</PropertyName>'
-                                           f'<Literal>{gem_id}</Literal>'
-                                           '</PropertyIsEqualTo>'
-                                           '<PropertyIsEqualTo>'
-                                           '<PropertyName>ave:flurschl</PropertyName>'
-                                           f'<Literal>{flur_id}</Literal>'
-                                           '</PropertyIsEqualTo>'
-                                           '</And>'
-                                           '</Filter>')
-            elif filter == 'oid':
-                oid = kwargs['id']
+                        param["filter"] = (
+                            '<Filter xmlns="http://www.opengis.net/ogc" '
+                            'xmlns:ave="http://repository.gdi-de.org/schemas/adv/produkt/alkis-vereinfacht/2.0">'
+                            "<And>"
+                            "<PropertyIsEqualTo>"
+                            "<PropertyName>ave:gemaschl</PropertyName>"
+                            f"<Literal>{gem_id}</Literal>"
+                            "</PropertyIsEqualTo>"
+                            "<PropertyIsEqualTo>"
+                            "<PropertyName>ave:flurschl</PropertyName>"
+                            f"<Literal>{flur_id}</Literal>"
+                            "</PropertyIsEqualTo>"
+                            "</And>"
+                            "</Filter>"
+                        )
+            elif filter == "oid":
+                oid = kwargs["id"]
                 if self.nrw is False:
-                    param['typename'] = 'gis:alkis_adv_flurstueck'
-                    param['filter'] = ('<Filter>'
-                                       '<PropertyIsEqualTo>'
-                                       '<ValueReference>IDFLURST</ValueReference>'
-                                       f'<Literal>{oid}</Literal>'
-                                       '</PropertyIsEqualTo>'
-                                       '</Filter>')
+                    param["typename"] = "gis:alkis_adv_flurstueck"
+                    param["filter"] = (
+                        "<Filter>"
+                        "<PropertyIsEqualTo>"
+                        "<ValueReference>IDFLURST</ValueReference>"
+                        f"<Literal>{oid}</Literal>"
+                        "</PropertyIsEqualTo>"
+                        "</Filter>"
+                    )
                 else:
-                    param['typename'] = 'ave:Flurstueck'
-                    param['Filter'] = ('<Filter xmlns="http://www.opengis.net/ogc" '
-                                       'xmlns:ave="http://repository.gdi-de.org/schemas/adv/produkt/alkis-vereinfacht/2.0">'
-                                       '<PropertyIsEqualTo>'
-                                       '<PropertyName>ave:idflurst</PropertyName>'
-                                       f'<Literal>{oid}</Literal>'
-                                       '</PropertyIsEqualTo>'
-                                       '</Filter>')
-            elif filter == 'flstkennz':
-                flstkennz = kwargs['id']
+                    param["typename"] = "ave:Flurstueck"
+                    param["Filter"] = (
+                        '<Filter xmlns="http://www.opengis.net/ogc" '
+                        'xmlns:ave="http://repository.gdi-de.org/schemas/adv/produkt/alkis-vereinfacht/2.0">'
+                        "<PropertyIsEqualTo>"
+                        "<PropertyName>ave:idflurst</PropertyName>"
+                        f"<Literal>{oid}</Literal>"
+                        "</PropertyIsEqualTo>"
+                        "</Filter>"
+                    )
+            elif filter == "flstkennz":
+                flstkennz = kwargs["id"]
                 if self.nrw is False:
-                    param['typename'] = 'gis:alkis_adv_flurstueck'
-                    param['filter'] = ('<Filter>'
-                                       '<PropertyIsEqualTo>'
-                                       '<ValueReference>FLSTKENNZ</ValueReference>'
-                                       f'<Literal>{str(flstkennz)}</Literal>'
-                                       '</PropertyIsEqualTo>'
-                                       '</Filter>')
+                    param["typename"] = "gis:alkis_adv_flurstueck"
+                    param["filter"] = (
+                        "<Filter>"
+                        "<PropertyIsEqualTo>"
+                        "<ValueReference>FLSTKENNZ</ValueReference>"
+                        f"<Literal>{str(flstkennz)}</Literal>"
+                        "</PropertyIsEqualTo>"
+                        "</Filter>"
+                    )
                 else:
-                    param['typename'] = 'ave:Flurstueck'
-                    param['filter'] = ('<Filter xmlns="http://www.opengis.net/ogc" '
-                                       'xmlns:ave="http://repository.gdi-de.org/schemas/adv/produkt/alkis-vereinfacht/2.0">'
-                                       '<PropertyIsEqualTo>'
-                                       '<PropertyName>ave:flstkennz</PropertyName>'
-                                       f'<Literal>{str(flstkennz)}</Literal>'
-                                       '</PropertyIsEqualTo>'
-                                       '</Filter>')
-            elif filter == 'clicked':
-                x, y = kwargs['x'], kwargs['y']
+                    param["typename"] = "ave:Flurstueck"
+                    param["filter"] = (
+                        '<Filter xmlns="http://www.opengis.net/ogc" '
+                        'xmlns:ave="http://repository.gdi-de.org/schemas/adv/produkt/alkis-vereinfacht/2.0">'
+                        "<PropertyIsEqualTo>"
+                        "<PropertyName>ave:flstkennz</PropertyName>"
+                        f"<Literal>{str(flstkennz)}</Literal>"
+                        "</PropertyIsEqualTo>"
+                        "</Filter>"
+                    )
+            elif filter == "clicked":
+                x, y = kwargs["x"], kwargs["y"]
                 if self.nrw is False:
-                    param['typename'] = 'gis:alkis_adv_flurstueck'
+                    param["typename"] = "gis:alkis_adv_flurstueck"
                     if x and y:
-                        param['filter'] = ('<fes:Filter>'
-                                           '<fes:Intersects>'
-                                           '<fes:ValueReference>GEOMETRY</fes:ValueReference>'
-                                           f'<gml:Point srsName="{self.crs}">'
-                                           f'<gml:coordinates>{x},{y}</gml:coordinates>'
-                                           '</gml:Point>'
-                                           '</fes:Intersects>'
-                                           '</fes:Filter>')
+                        param["filter"] = (
+                            "<fes:Filter>"
+                            "<fes:Intersects>"
+                            "<fes:ValueReference>GEOMETRY</fes:ValueReference>"
+                            f'<gml:Point srsName="{self.crs}">'
+                            f"<gml:coordinates>{x},{y}</gml:coordinates>"
+                            "</gml:Point>"
+                            "</fes:Intersects>"
+                            "</fes:Filter>"
+                        )
                 else:
-                    param['typename'] = 'ave:Flurstueck'
+                    param["typename"] = "ave:Flurstueck"
                     if x and y:
-                        param['filter'] = ('<Filter '
-                                           'xmlns="http://www.opengis.net/ogc" '
-                                           'xmlns:ave="http://repository.gdi-de.org/schemas/adv/produkt/alkis-vereinfacht/2.0" '
-                                           'xmlns:fes="http://www.opengis.net/fes/2.0" '
-                                           'xmlns:gml="http://www.opengis.net/gml">'
-                                           '<Intersects>'
-                                           '<PropertyName>ave:geometrie</PropertyName>'
-                                           f'<gml:Point srsName="{self.crs}">'
-                                           f'<gml:coordinates>{x},{y}</gml:coordinates>'
-                                           '</gml:Point>'
-                                           '</Intersects>'
-                                           '</Filter>')
+                        param["filter"] = (
+                            "<Filter "
+                            'xmlns="http://www.opengis.net/ogc" '
+                            'xmlns:ave="http://repository.gdi-de.org/schemas/adv/produkt/alkis-vereinfacht/2.0" '
+                            'xmlns:fes="http://www.opengis.net/fes/2.0" '
+                            'xmlns:gml="http://www.opengis.net/gml">'
+                            "<Intersects>"
+                            "<PropertyName>ave:geometrie</PropertyName>"
+                            f'<gml:Point srsName="{self.crs}">'
+                            f"<gml:coordinates>{x},{y}</gml:coordinates>"
+                            "</gml:Point>"
+                            "</Intersects>"
+                            "</Filter>"
+                        )
 
             url = base_url + urllib.parse.unquote_plus(urllib.parse.urlencode(param))
             return url
 
     def SetKatasteramt(self):
-        """ If NRW is activated the Kommune is set by the current text of the combobox """
+        """If NRW is activated the Kommune is set by the current text of the combobox"""
         # if idx != -1 and self.nrw is True and self.first_start is False:
         if len(self.dockwidget.cmb_katasteramt) > 1:
             self.katasteramt = self.dockwidget.cmb_katasteramt.currentText()
-            self.dockwidget.flurstueck_suchen_gbox.setTitle(f'Flurstück in {self.katasteramt} suchen')
+            self.dockwidget.flurstueck_suchen_gbox.setTitle(
+                f"Flurstück in {self.katasteramt} suchen"
+            )
             if self.katasteramt:
-                self.config['DEFAULT']['katasteramt'] = self.katasteramt
-                with open(self.config_file, 'w+', encoding='UTF-8') as file:
+                self.config["DEFAULT"]["katasteramt"] = self.katasteramt
+                with open(self.config_file, "w+", encoding="UTF-8") as file:
                     self.config.write(file)
 
     def GetFlurstuecke(self):
-        """ Queries Flurstücke from WFS and saves them to a dict """
+        """Queries Flurstücke from WFS and saves them to a dict"""
         gem = self.dockwidget.cmb_gemarkung_id.currentText()
         flur = self.dockwidget.cmb_flur_nr.currentText()
-        url = self.GetURL(filter='flurstuecke', gem_id=gem, flur_nr=flur)
+        url = self.GetURL(filter="flurstuecke", gem_id=gem, flur_nr=flur)
         flurstuecke = {}
         flurstuecke_layer = None
         if url is not None:
             if self.nrw is False:
-                fieldnames = ['FLSTNRZAE', 'FLSTNRNEN', 'FLSTKENNZ']
-                typename = 'gis:alkis_adv_flurstueckpkt'
-                geometry = 'GEOMETRY'
+                fieldnames = ["FLSTNRZAE", "FLSTNRNEN", "FLSTKENNZ"]
+                typename = "gis:alkis_adv_flurstueckpkt"
+                geometry = "GEOMETRY"
             else:
-                fieldnames = ['flstnrzae', 'flstnrnen', 'flstkennz']
-                typename = 'ave:FlurstueckPunkt'
-                geometry = 'geometrie'
+                fieldnames = ["flstnrzae", "flstnrnen", "flstkennz"]
+                typename = "ave:FlurstueckPunkt"
+                geometry = "geometrie"
             fields = QgsFields()
             for fieldname in fieldnames:
-                fields.append(QgsField(fieldname, QVariant.String, '', 100, 0))
+                fields.append(QgsField(fieldname, QVariant.String, "", 100, 0))
             gml = None
             gml = QgsGml(typename, geometry, fields)
             wfs_request = gml.getFeaturesUri(url)
             parsed_features = gml.featuresMap()
             if wfs_request[0] == 0:
-                flurstuecke_layer = QgsVectorLayer(f"point?crs=EPSG:{self.epsg}", 'flurstuecke_layer', "memory")
+                flurstuecke_layer = QgsVectorLayer(
+                    f"point?crs=EPSG:{self.epsg}", "flurstuecke_layer", "memory"
+                )
                 flurstuecke_layer_data_prov = flurstuecke_layer.dataProvider()
                 flurstuecke_layer_data_prov.addAttributes(fields.toList())
                 flurstuecke_layer.updateFields()
@@ -770,22 +892,24 @@ class FlurstuecksFinderNRW:
                 for idx, flurstueck in enumerate(features):
                     flst_zae = flurstueck[fieldnames[0]]
                     flstkennz = flurstueck[fieldnames[2]]
-                    flst_nen = ''
+                    flst_nen = ""
                     flstnr = flst_zae
                     if flurstuecke_layer.fields().indexFromName(fieldnames[1]) != -1:
                         if flurstueck[fieldnames[1]]:
-                            flst_nen = '/'+str(flurstueck[fieldnames[1]])
-                            flstnr = flst_zae+flst_nen
-                    flurstuecke[idx] = {'Flurstückkennzeichen': flstkennz,
-                                        'Flurstuecksnummer': flstnr}
+                            flst_nen = "/" + str(flurstueck[fieldnames[1]])
+                            flstnr = flst_zae + flst_nen
+                    flurstuecke[idx] = {
+                        "Flurstückkennzeichen": flstkennz,
+                        "Flurstuecksnummer": flstnr,
+                    }
         return flurstuecke
 
-# ---------------------------------------------------------------------------- #
-# Functions around comboboxes and textfields                                   #
-# ---------------------------------------------------------------------------- #
+    # ---------------------------------------------------------------------------- #
+    # Functions around comboboxes and textfields                                   #
+    # ---------------------------------------------------------------------------- #
 
     def FillComboBoxKatasteramt(self):
-        """ Fills the katasteramt combobox """
+        """Fills the katasteramt combobox"""
         katasteraemter = None
         if self.nrw is True:
             if len(self.dockwidget.cmb_katasteramt) == 0:
@@ -799,21 +923,26 @@ class FlurstuecksFinderNRW:
                     self.dockwidget.cmb_katasteramt.blockSignals(False)
 
     def FillComboBoxGemarkung(self):
-        """ Fills the combo boxes according to the arguments """
+        """Fills the combo boxes according to the arguments"""
         self.dockwidget.cmb_gemarkung_name.clear()
         self.dockwidget.cmb_gemarkung_id.clear()
         self.ClearTextFields()
         gemarkungen = None
         if self.nrw is True and self.dockwidget.cmb_katasteramt.currentIndex() != -1:
             self.katasteramt = self.dockwidget.cmb_katasteramt.currentText()
-        elif self.nrw is False and self.dockwidget.rb_group.checkedButton().text() != "NRW":
+        elif (
+            self.nrw is False
+            and self.dockwidget.rb_group.checkedButton().text() != "NRW"
+        ):
             self.katasteramt = self.dockwidget.rb_group.checkedButton().text()
         else:
             self.katasteramt = None
         if self.katasteramt and self.katasterdaten:
             gemarkungen = self.katasterdaten.get(self.katasteramt.replace("Stadt ", ""))
             gemarkungen_name = gemarkungen.keys()
-            gemarkungen_ids = sorted([i.get('schluessel') for i in gemarkungen.values()])
+            gemarkungen_ids = sorted(
+                [i.get("schluessel") for i in gemarkungen.values()]
+            )
             self.dockwidget.cmb_gemarkung_name.blockSignals(True)
             self.dockwidget.cmb_gemarkung_id.blockSignals(True)
             self.dockwidget.cmb_gemarkung_name.addItems(gemarkungen_name)
@@ -824,19 +953,26 @@ class FlurstuecksFinderNRW:
             self.dockwidget.cmb_gemarkung_id.blockSignals(False)
 
     def FillComboBoxFluren(self):
-        """ Fills the combobox of the flur id """
+        """Fills the combobox of the flur id"""
         self.dockwidget.cmb_flur_nr.clear()
         self.dockwidget.cmb_flur_nr.clear()
         fluren = None
         if self.nrw is True and self.dockwidget.cmb_katasteramt.currentIndex() != -1:
             self.katasteramt = self.dockwidget.cmb_katasteramt.currentText()
-        elif self.nrw is False and self.dockwidget.rb_group.checkedButton().text() != "NRW":
+        elif (
+            self.nrw is False
+            and self.dockwidget.rb_group.checkedButton().text() != "NRW"
+        ):
             self.katasteramt = self.dockwidget.rb_group.checkedButton().text()
         else:
             self.katasteramt = None
         gemarkung = self.dockwidget.cmb_gemarkung_name.currentText()
         if self.katasterdaten and gemarkung and self.katasteramt:
-            fluren = self.katasterdaten.get(self.katasteramt.replace("Stadt ", "")).get(gemarkung).get('fluren')
+            fluren = (
+                self.katasterdaten.get(self.katasteramt.replace("Stadt ", ""))
+                .get(gemarkung)
+                .get("fluren")
+            )
             self.dockwidget.cmb_flur_nr.blockSignals(True)
             self.dockwidget.cmb_flur_nr.clear()
             self.dockwidget.cmb_flurstueck.clear()
@@ -845,7 +981,7 @@ class FlurstuecksFinderNRW:
             self.dockwidget.cmb_flur_nr.blockSignals(False)
 
     def FillComboBoxFlurstuecke(self):
-        """ Fills the Flurstücknummer combobox """
+        """Fills the Flurstücknummer combobox"""
         self.dockwidget.cmb_flurstueck.clear()
         flurstuecke = {}
         flurstuecke_nr = []
@@ -854,10 +990,15 @@ class FlurstuecksFinderNRW:
             flurstuecke = self.GetFlurstuecke()
             if flurstuecke:
                 flurstuecke = OrderedDict(
-                    sorted(flurstuecke.items(),
-                           key=lambda i: i[1]['Flurstückkennzeichen'].strip('_')))
+                    sorted(
+                        flurstuecke.items(),
+                        key=lambda i: i[1]["Flurstückkennzeichen"].strip("_"),
+                    )
+                )
             if flurstuecke:
-                flurstuecke_nr = [i.get('Flurstuecksnummer') for i in flurstuecke.values()]
+                flurstuecke_nr = [
+                    i.get("Flurstuecksnummer") for i in flurstuecke.values()
+                ]
             if flurstuecke_nr:
                 self.dockwidget.cmb_flurstueck.blockSignals(True)
                 self.dockwidget.cmb_flurstueck.addItems(flurstuecke_nr)
@@ -865,8 +1006,8 @@ class FlurstuecksFinderNRW:
                 self.dockwidget.cmb_flurstueck.blockSignals(False)
 
     def MatchComboBoxesTextFields(self):
-        """ Generates from the different comboboxes one
-        string in the format xxxx-x-x and inserts it into a text field """
+        """Generates from the different comboboxes one
+        string in the format xxxx-x-x and inserts it into a text field"""
         # Content of the Gemarkungs-Id combobox
         gem = self.dockwidget.cmb_gemarkung_id.currentText()
         # Content of the Flur combobox
@@ -878,20 +1019,20 @@ class FlurstuecksFinderNRW:
         self.dockwidget.txt_flstkennzlang.clear()
         # Concatenation of the individual strings with hyphens
         if gem and gem:
-            n_text = '-'.join([gem])
+            n_text = "-".join([gem])
         if flur and flur:
-            n_text = '-'.join([gem, flur])
+            n_text = "-".join([gem, flur])
         if flst_zae and flst_zae:
-            n_text = '-'.join([gem, flur, flst_zae])
+            n_text = "-".join([gem, flur, flst_zae])
         if n_text is not None:
             self.dockwidget.txt_gemarkung_flur_flurstueck.setText(n_text)
 
     def ParseTextFieldsComboBoxes(self):
-        """ If the content of the textbox changes,
-         the contents of the combo boxes have to be compared with it """
+        """If the content of the textbox changes,
+        the contents of the combo boxes have to be compared with it"""
         text = self.dockwidget.txt_gemarkung_flur_flurstueck.text()
-        pattern_zae = re.compile(r'(^\d{4})\-(\d{1,3})\-(\d{1,5}$)')
-        pattern_nen = re.compile(r'^(^\d{4})\-(\d{1,3})\-(\d{1,5}\/\d{1,5}$)')
+        pattern_zae = re.compile(r"(^\d{4})\-(\d{1,3})\-(\d{1,5}$)")
+        pattern_nen = re.compile(r"^(^\d{4})\-(\d{1,3})\-(\d{1,5}\/\d{1,5}$)")
         gem_id, flur, flst = None, None, None
 
         if pattern_zae.match(text):
@@ -899,102 +1040,113 @@ class FlurstuecksFinderNRW:
         elif pattern_nen.match(text):
             gem_id, flur, flst = pattern_nen.match(text).groups()
         if gem_id is not None and flur is not None and flst is not None:
-
             if gem_id != self.dockwidget.cmb_gemarkung_id.currentText():
                 idx1 = self.dockwidget.cmb_gemarkung_id.findText(
-                    gem_id, Qt.MatchFixedString)
+                    gem_id, Qt.MatchFixedString
+                )
                 if idx1 != -1:
                     self.dockwidget.cmb_gemarkung_id.setCurrentIndex(idx1)
 
             if flur != self.dockwidget.cmb_flur_nr.currentText():
-                idx2 = self.dockwidget.cmb_flur_nr.findText(
-                    flur, Qt.MatchFixedString)
+                idx2 = self.dockwidget.cmb_flur_nr.findText(flur, Qt.MatchFixedString)
                 if idx2 != -1:
                     self.dockwidget.cmb_flur_nr.setCurrentIndex(idx2)
 
             if flst != self.dockwidget.cmb_flurstueck.currentText():
                 idx3 = self.dockwidget.cmb_flurstueck.findText(
-                    flst, Qt.MatchFixedString)
+                    flst, Qt.MatchFixedString
+                )
                 if idx3 != -1:
                     self.dockwidget.cmb_flurstueck.blockSignals(True)
                     self.dockwidget.cmb_flurstueck.setCurrentIndex(idx3)
                     self.dockwidget.cmb_flurstueck.blockSignals(False)
 
     def CreateFlurstueckKennzeichen(self, text):
-        """ Creates a Flurstück identifier from the contents of the text field.
-         Splits the string in the text field and adds necessary arguments,
-         to be able to search the Flurstück identifier on the WFS"""
+        """Creates a Flurstück identifier from the contents of the text field.
+        Splits the string in the text field and adds necessary arguments,
+        to be able to search the Flurstück identifier on the WFS"""
 
         # 1rd part of the string (short gem key)
-        gem = text.split('-')[0]
+        gem = text.split("-")[0]
         # If the short key has been entered
         # the Gemarkung key 05 is prefixed to it
-        if not gem.startswith('05'):
-            gem = '05' + text.split('-')[0]
+        if not gem.startswith("05"):
+            gem = "05" + text.split("-")[0]
         # 2nd part of the string (field number)
-        flur = text.split('-')[1]
+        flur = text.split("-")[1]
         # field number is filled up to 3 digits with preceding zeros
         flur = flur.zfill(3)
         # 3rd part of the string (Flurstück number)
-        flst_zae = text.split('-')[2]
-        flst_nen = ''
-        if '/' in flst_zae:
-            flst_zae, flst_nen = flst_zae.split('/')[0], flst_zae.split('/')[1]
+        flst_zae = text.split("-")[2]
+        flst_nen = ""
+        if "/" in flst_zae:
+            flst_zae, flst_nen = flst_zae.split("/")[0], flst_zae.split("/")[1]
             flst_nen = flst_nen.zfill(4)
         # Flurstück number is filled up to 5 digits with leading zeros
         flst_zae = flst_zae.zfill(5)
         flstkennz = gem + flur + flst_zae + flst_nen
         # All Flurstück identifiers have '_' appended to them
-        flstkennz = f'{flstkennz:_<20}'
+        flstkennz = f"{flstkennz:_<20}"
         # Finished string in format: 05323000100001______
         return flstkennz, gem
 
     def ResetComboBoxes(self):
-        """ When a radio button is changed/set,
-        the combo boxes are reset and refilled """
+        """When a radio button is changed/set,
+        the combo boxes are reset and refilled"""
         self.dockwidget.cmb_gemarkung_name.clear()
         self.dockwidget.cmb_gemarkung_id.clear()
         self.dockwidget.cmb_flur_nr.clear()
         self.dockwidget.cmb_flurstueck.clear()
 
     def ResetComboBoxesIndex(self):
-        """ Sets the index of the combo boxes to -1,
-        so that no text is displayed """
+        """Sets the index of the combo boxes to -1,
+        so that no text is displayed"""
         self.dockwidget.cmb_gemarkung_name.setCurrentIndex(-1)
         self.dockwidget.cmb_gemarkung_id.setCurrentIndex(-1)
         self.dockwidget.cmb_flur_nr.setCurrentIndex(-1)
         self.dockwidget.cmb_flurstueck.setCurrentIndex(-1)
 
     def ClearTextFields(self):
-        """ Cleans the textfields """
+        """Cleans the textfields"""
         self.dockwidget.txt_alkis_id.clear()
         self.dockwidget.txt_gemarkung_flur_flurstueck.clear()
         self.dockwidget.txt_flstkennzlang.clear()
 
     def TextFieldChanged(self, text, button):
-        """ Activates the buttons when the text has exceeded a certain length """
+        """Activates the buttons when the text has exceeded a certain length"""
         if len(text) == 0:
             button.setEnabled(False)
         elif len(text) >= 8:
             button.setEnabled(True)
 
-# ---------------------------------------------------------------------------- #
-# Functions for interaction with the Flurstücke                                #
-# ---------------------------------------------------------------------------- #
+    # ---------------------------------------------------------------------------- #
+    # Functions for interaction with the Flurstücke                                #
+    # ---------------------------------------------------------------------------- #
 
     def SearchFlurstueck(self, art, mouse_click):
-        """ The actual search function, which uses either Flurstückskennzeichen (Gemarkung-Flur-Flurstück), ALKIS ID or Flurstückskennzeichen"""
-        if art in ['flstkennz', 'alkisid', 'flstkennzlang']:
+        """The actual search function, which uses either Flurstückskennzeichen (Gemarkung-Flur-Flurstück), ALKIS ID or Flurstückskennzeichen"""
+        if art in ["flstkennz", "alkisid", "flstkennzlang"]:
             text_alkis_id = self.dockwidget.txt_alkis_id.text().strip()
-            text_flstkennz = self.dockwidget.txt_gemarkung_flur_flurstueck.text().strip()
+            text_flstkennz = (
+                self.dockwidget.txt_gemarkung_flur_flurstueck.text().strip()
+            )
             text_flstkennzlang = self.dockwidget.txt_flstkennzlang.text().strip()
-            if self.dockwidget.rb_group.checkedButton().text() in ['Stadt Krefeld', 'Kreis Wesel', 'Kreis Viersen', 'Kreis Kleve']:
+            if self.dockwidget.rb_group.checkedButton().text() in [
+                "Stadt Krefeld",
+                "Kreis Wesel",
+                "Kreis Viersen",
+                "Kreis Kleve",
+            ]:
                 gem_id = text_flstkennz.split("-")[0]
                 for k, v in self.katasterdaten.items():
                     for vk in v.values():
-                        gem_nr = vk.get('schluessel')
+                        gem_nr = vk.get("schluessel")
                         if gem_nr == gem_id:
-                            button = [button for button in self.dockwidget.rb_group.buttons() if k in button.text()]
+                            button = [
+                                button
+                                for button in self.dockwidget.rb_group.buttons()
+                                if k in button.text()
+                            ]
                             if button:
                                 button = button[0]
                                 button.setChecked(True)
@@ -1003,10 +1155,10 @@ class FlurstuecksFinderNRW:
             flstkennzlang = None
             url = None
             flurstueck_layer = None
-            pattern_alkis = re.compile(r'^DENW\d{2}AL\w{8,10}$')
-            pattern_flst_ohne_nenner = re.compile(r'^\d{4}-\d{1,3}-\d{1,5}$')
-            pattern_flst_mit_nenner = re.compile(r'^\d{4}-\d{1,3}-\d{1,5}\/\d{1,5}$')
-            pattern_flstkennzlang = re.compile(r'^05\d{12}[0-9_]{6}$')
+            pattern_alkis = re.compile(r"^DENW\d{2}AL\w{8,10}$")
+            pattern_flst_ohne_nenner = re.compile(r"^\d{4}-\d{1,3}-\d{1,5}$")
+            pattern_flst_mit_nenner = re.compile(r"^\d{4}-\d{1,3}-\d{1,5}\/\d{1,5}$")
+            pattern_flstkennzlang = re.compile(r"^05\d{12}[0-9_]{6}$")
             if pattern_alkis.match(text_alkis_id):
                 alkis_id = pattern_alkis.match(text_alkis_id).group()
             if pattern_flst_ohne_nenner.match(text_flstkennz):
@@ -1017,47 +1169,91 @@ class FlurstuecksFinderNRW:
                 flstkennz, _ = self.CreateFlurstueckKennzeichen(flstkennz)
             if pattern_flstkennzlang.match(text_flstkennzlang):
                 flstkennzlang = pattern_flstkennzlang.match(text_flstkennzlang).group()
-            if flstkennz is not None and art == 'flstkennz':
-                url = self.GetURL(filter='flstkennz', id=flstkennz)
-            elif alkis_id is not None and art == 'alkisid':
-                url = self.GetURL(filter='oid', id=alkis_id)
-            elif flstkennzlang is not None and art == 'flstkennzlang':
-                url = self.GetURL(filter='flstkennz', id=flstkennzlang)
-            elif (flstkennz is None and art == 'flstkennz') or (flstkennzlang is None and art == 'flstkennzlang'):
-                self.PushMessage(message='Es konnte kein Flurstück mit dieser Kennung gefunden werden.',
-                                 level=Qgis.Info)
-            elif alkis_id is None and art == 'alkisid':
-                self.PushMessage(message='Mit dieser ALKIS-ID konnte kein Flurstück gefunden werden.',
-                                 level=Qgis.Info)
-        elif art == 'clicked':
+            if flstkennz is not None and art == "flstkennz":
+                url = self.GetURL(filter="flstkennz", id=flstkennz)
+            elif alkis_id is not None and art == "alkisid":
+                url = self.GetURL(filter="oid", id=alkis_id)
+            elif flstkennzlang is not None and art == "flstkennzlang":
+                url = self.GetURL(filter="flstkennz", id=flstkennzlang)
+            elif (flstkennz is None and art == "flstkennz") or (
+                flstkennzlang is None and art == "flstkennzlang"
+            ):
+                self.PushMessage(
+                    message="Es konnte kein Flurstück mit dieser Kennung gefunden werden.",
+                    level=Qgis.Info,
+                )
+            elif alkis_id is None and art == "alkisid":
+                self.PushMessage(
+                    message="Mit dieser ALKIS-ID konnte kein Flurstück gefunden werden.",
+                    level=Qgis.Info,
+                )
+        elif art == "clicked":
             x, y = mouse_click[0], mouse_click[1]
-            url = self.GetURL(filter='clicked', x=x, y=y)
+            url = self.GetURL(filter="clicked", x=x, y=y)
         if url is not None:
             if self.nrw is False:
-                fieldnames = ['KREIS', 'FLSTKENNZ', 'IDFLURST', 'OID', 'AKTUALIT', 'FLAECHE',
-                              'LAGEBEZTXT', 'ABWRECHT', 'GEMARKUNG', 'GEMASCHL', 'FLUR', 'FLURSCHL',
-                              'FLSTNRZAE', 'FLSTNRNEN', 'REGBEZIRK', 'REGBEZSCHL', 'KREISSCHL',
-                              'GEMEINDE', 'GMDSCHL', 'LAND', 'LANDSCHL']
-                typename = 'gis:alkis_adv_flurstueck'
-                geometry = 'GEOMETRY'
+                fieldnames = [
+                    "KREIS",
+                    "FLSTKENNZ",
+                    "IDFLURST",
+                    "OID",
+                    "AKTUALIT",
+                    "FLAECHE",
+                    "LAGEBEZTXT",
+                    "ABWRECHT",
+                    "GEMARKUNG",
+                    "GEMASCHL",
+                    "FLUR",
+                    "FLURSCHL",
+                    "FLSTNRZAE",
+                    "FLSTNRNEN",
+                    "REGBEZIRK",
+                    "REGBEZSCHL",
+                    "KREISSCHL",
+                    "GEMEINDE",
+                    "GMDSCHL",
+                    "LAND",
+                    "LANDSCHL",
+                ]
+                typename = "gis:alkis_adv_flurstueck"
+                geometry = "GEOMETRY"
             else:
-                fieldnames = ['kreis', 'flstkennz', 'idflurst', 'oid', 'aktualit', 'gemarkung',
-                              'gemaschl', 'flur', 'flurschl', 'flstnrzae', 'flstnrnen', 'regbezirk',
-                              'regbezschl', 'kreisschl', 'gemeinde', 'gmdschl', 'land', 'landschl']
-                typename = 'ave:Flurstueck'
-                geometry = 'geometrie'
+                fieldnames = [
+                    "kreis",
+                    "flstkennz",
+                    "idflurst",
+                    "oid",
+                    "aktualit",
+                    "gemarkung",
+                    "gemaschl",
+                    "flur",
+                    "flurschl",
+                    "flstnrzae",
+                    "flstnrnen",
+                    "regbezirk",
+                    "regbezschl",
+                    "kreisschl",
+                    "gemeinde",
+                    "gmdschl",
+                    "land",
+                    "landschl",
+                ]
+                typename = "ave:Flurstueck"
+                geometry = "geometrie"
             fields = QgsFields()
             for fieldname in fieldnames:
                 fieldlength = 100
-                if fieldname == 'LAGEBEZTXT':
+                if fieldname == "LAGEBEZTXT":
                     fieldlength = 1000
-                fields.append(QgsField(fieldname, QVariant.String, '', fieldlength, 0))
+                fields.append(QgsField(fieldname, QVariant.String, "", fieldlength, 0))
             gml = None
             gml = QgsGml(typename, geometry, fields)
             wfs_request = gml.getFeaturesUri(url)
             parsed_features = gml.featuresMap()
             if wfs_request[0] == 0:
-                flurstueck_layer = QgsVectorLayer(f"polygon?crs=EPSG:{self.epsg}", 'flurstueck_layer', "memory")
+                flurstueck_layer = QgsVectorLayer(
+                    f"polygon?crs=EPSG:{self.epsg}", "flurstueck_layer", "memory"
+                )
                 flurstueck_layer_data_prov = flurstueck_layer.dataProvider()
                 flurstueck_layer_data_prov.addAttributes(fields.toList())
                 flurstueck_layer.updateFields()
@@ -1067,68 +1263,93 @@ class FlurstuecksFinderNRW:
                 flurstueck_layer.updateExtents()
             if flurstueck_layer:
                 if flurstueck_layer.isValid():
-                    katasteramt = [feature[fieldnames[0]] for feature in flurstueck_layer.getFeatures()]
+                    katasteramt = [
+                        feature[fieldnames[0]]
+                        for feature in flurstueck_layer.getFeatures()
+                    ]
                     if katasteramt:
                         katasteramt = katasteramt[0]
-                        flstkennz = [feature[fieldnames[1]] for feature in flurstueck_layer.getFeatures()][0]
-                        alkis_id = [feature[fieldnames[2]] for feature in flurstueck_layer.getFeatures()][0]
+                        flstkennz = [
+                            feature[fieldnames[1]]
+                            for feature in flurstueck_layer.getFeatures()
+                        ][0]
+                        alkis_id = [
+                            feature[fieldnames[2]]
+                            for feature in flurstueck_layer.getFeatures()
+                        ][0]
                         flstkennz_kurz = self.SplitFlurstueck(flstkennz)
                         if self.nrw is True:
-                            idx = self.dockwidget.cmb_katasteramt.findText(katasteramt, Qt.MatchContains)
+                            idx = self.dockwidget.cmb_katasteramt.findText(
+                                katasteramt, Qt.MatchContains
+                            )
                             if idx != -1:
                                 self.dockwidget.cmb_katasteramt.setCurrentIndex(idx)
                         else:
-                            button = [button for button in self.dockwidget.rb_group.buttons() if button.text() == katasteramt]
+                            button = [
+                                button
+                                for button in self.dockwidget.rb_group.buttons()
+                                if button.text() == katasteramt
+                            ]
                             if button:
                                 button = button[0]
                                 button.setChecked(True)
                         self.dockwidget.txt_alkis_id.setText(alkis_id)
-                        self.dockwidget.txt_gemarkung_flur_flurstueck.setText(flstkennz_kurz)
+                        self.dockwidget.txt_gemarkung_flur_flurstueck.setText(
+                            flstkennz_kurz
+                        )
                         self.dockwidget.txt_flstkennzlang.setText(flstkennz)
                         self.ParseTextFieldsComboBoxes()
                         flurstueck_layer.setName(flstkennz_kurz)
                         self.ShowFlurstueck(flurstueck_layer)
                     else:
-                        if art == 'clicked':
-                            self.PushMessage(message=f'An Koordinate {x} : {y} wurde kein Flurstück gefunden!\n\
-                            Möglicherweise suchen Sie außerhalb des WFS-Gebiets.',
-                                         level=Qgis.Info)
+                        if art == "clicked":
+                            self.PushMessage(
+                                message=f"An Koordinate {x} : {y} wurde kein Flurstück gefunden!\n\
+                            Möglicherweise suchen Sie außerhalb des WFS-Gebiets.",
+                                level=Qgis.Info,
+                            )
                         else:
-                            self.PushMessage(message='Mit dieser Kennung konnte kein Flurstück gefunden werden.',
-                                         level=Qgis.Info)
+                            self.PushMessage(
+                                message="Mit dieser Kennung konnte kein Flurstück gefunden werden.",
+                                level=Qgis.Info,
+                            )
                 else:
-                    if art == 'clicked':
-                        self.PushMessage(message=f'An Koordinate {x} : {y} wurde kein Flurstück gefunden!\n\
-                        Möglicherweise suchen Sie außerhalb des WFS-Gebiets.',
-                                     level=Qgis.Info)
+                    if art == "clicked":
+                        self.PushMessage(
+                            message=f"An Koordinate {x} : {y} wurde kein Flurstück gefunden!\n\
+                        Möglicherweise suchen Sie außerhalb des WFS-Gebiets.",
+                            level=Qgis.Info,
+                        )
                     else:
-                        self.PushMessage(message='Mit dieser Kennung konnte kein Flurstück gefunden werden.',
-                                     level=Qgis.Info)
+                        self.PushMessage(
+                            message="Mit dieser Kennung konnte kein Flurstück gefunden werden.",
+                            level=Qgis.Info,
+                        )
         return flurstueck_layer
 
     def SplitFlurstueck(self, flstkennz):
-        """ Splits the Flurstück identifier into components """
+        """Splits the Flurstück identifier into components"""
         if flstkennz:
-            flstkennz = flstkennz.strip('_')
+            flstkennz = flstkennz.strip("_")
             gem = str(flstkennz[2:6])
-            flur = str(flstkennz[6:9].lstrip('0'))
-            flst_zae = str(flstkennz[9:14].lstrip('0'))
-            flst_nen = str(flstkennz[14:].lstrip('0'))
+            flur = str(flstkennz[6:9].lstrip("0"))
+            flst_zae = str(flstkennz[9:14].lstrip("0"))
+            flst_nen = str(flstkennz[14:].lstrip("0"))
             flstkennz = flst_zae
             if len(flst_nen) != 0:
-                flstkennz = flst_zae+'/'+flst_nen
-            flstkennz = f'{gem}-{flur}-{flstkennz}'
+                flstkennz = flst_zae + "/" + flst_nen
+            flstkennz = f"{gem}-{flur}-{flstkennz}"
         return flstkennz
 
     def ShowFlurstueck(self, layer):
-        """ If a valid layer was passed to the function, the geometry of the
-        Flurstück will be highlighted and the Flurstück-Info table will be populated """
+        """If a valid layer was passed to the function, the geometry of the
+        Flurstück will be highlighted and the Flurstück-Info table will be populated"""
         if layer.isValid():
             self.CheckCRS()
             crs = layer.crs()
-            crs.createFromString(f'EPSG:{self.epsg}')
+            crs.createFromString(f"EPSG:{self.epsg}")
             layer.setCrs(crs)
-            self.ChangePushButtonsIcons('add')
+            self.ChangePushButtonsIcons("add")
             self.RemoveHighlights()
             self.layer = self.CheckFlurstueck(layer)
             feature = list(self.layer.getFeatures())[0]
@@ -1139,37 +1360,45 @@ class FlurstuecksFinderNRW:
             if self.dockwidget.chk_mark.isChecked():
                 # Outline from the highlight, a white thick line
                 FlurstuecksFinderNRW.highlight = QgsHighlight(
-                    self.canvas, self.geom, self.layer)
-                color = QColor('white')
+                    self.canvas, self.geom, self.layer
+                )
+                color = QColor("white")
                 FlurstuecksFinderNRW.highlight.setColor(color)
                 FlurstuecksFinderNRW.highlight.setFillColor(QColor(0, 0, 0, 0))
                 FlurstuecksFinderNRW.highlight.setWidth(10)
                 # Inner red line of the highlight
                 FlurstuecksFinderNRW.highlight2 = QgsHighlight(
-                    self.canvas, self.geom, self.layer)
-                color = QColor('red')
+                    self.canvas, self.geom, self.layer
+                )
+                color = QColor("red")
                 FlurstuecksFinderNRW.highlight2.setColor(color)
                 FlurstuecksFinderNRW.highlight2.setFillColor(QColor(0, 0, 0, 0))
                 FlurstuecksFinderNRW.highlight2.setWidth(3)
             else:
-                self.canvas.flashGeometries([self.geom.convertToType(QgsWkbTypes.LineGeometry)], self.layer.crs(
-                ), QColor(255, 0, 0, 255), QColor(0, 0, 0, 0), int(5), int(500))
+                self.canvas.flashGeometries(
+                    [self.geom.convertToType(QgsWkbTypes.LineGeometry)],
+                    self.layer.crs(),
+                    QColor(255, 0, 0, 255),
+                    QColor(0, 0, 0, 0),
+                    int(5),
+                    int(500),
+                )
             self.canvas.refresh()
             self.TableFlurstueckFields()
             self.EnablePushButtons()
 
     def CheckFlurstueck(self, layer):
-        """ Checks if the Flurstück has already been added """
+        """Checks if the Flurstück has already been added"""
         layer_list = None
         layer_list = QgsProject.instance().mapLayers()
         if layer_list:
             if layer.name() in [l.name() for l in layer_list.values()]:
                 layer = QgsProject.instance().mapLayersByName(layer.name())[0]
-                self.ChangePushButtonsIcons('remove')
+                self.ChangePushButtonsIcons("remove")
         return layer
 
     def AddFlurstueckLayer(self, layer):
-        """ When the add button is clicked, Flurstück polygon is added """
+        """When the add button is clicked, Flurstück polygon is added"""
         layers = None
         # try to add layer if layer name already exists
         # set variable layer to just that layer
@@ -1182,7 +1411,7 @@ class FlurstuecksFinderNRW:
         # If the attempt fails, perform a new search using the ALKIS ID
         # and write the result into the variable Layer
         except:
-            self.layer = self.SearchFlurstueck('alkisid', None)
+            self.layer = self.SearchFlurstueck("alkisid", None)
 
         # If there is no layer with the same name, add it
         if not layers:
@@ -1190,66 +1419,72 @@ class FlurstuecksFinderNRW:
             # Generate a label for the Flurstück
             label_layer = QgsPalLayerSettings()
             prop = QgsProperty()
-            prop.setExpressionString('CASE\n\
+            prop.setExpressionString(
+                "CASE\n\
             WHEN @map_scale <2000 THEN 12\n\
             WHEN @map_scale >=2000 and @map_scale <4000 THEN 10\n\
             WHEN @map_scale >=4000 and @map_scale <10000 THEN 8\n\
             ELSE 0\n\
-            END')
+            END"
+            )
             prop_col = QgsPropertyCollection()
             prop_col.setProperty(0, prop)
             label_layer.setDataDefinedProperties(prop_col)
             # Uses a QGIS expression to create the label text
-            label_layer.fieldName = 'substr(@layer_name,strpos(@layer_name, \'_\')+1)'
+            label_layer.fieldName = "substr(@layer_name,strpos(@layer_name, '_')+1)"
             label_layer.enabled = True
             label_layer.centroidWhole = True
             label_layer.centroidInside = True
             label_layer.isExpression = True
             # Configure the text format
             label_format = QgsTextFormat()
-            label_format.setFont(QFont('Arial', 12, 75))
-            label_format.setColor(QColor('White'))
+            label_format.setFont(QFont("Arial", 12, 75))
+            label_format.setColor(QColor("White"))
             label_buffer = QgsTextBufferSettings()
             label_buffer.setEnabled(True)
             label_buffer.setSize(0.5)
-            label_buffer.setColor(QColor('Black'))
+            label_buffer.setColor(QColor("Black"))
             label_format.setBuffer(label_buffer)
             label_layer.setFormat(label_format)
             label = QgsVectorLayerSimpleLabeling(label_layer)
-            self.layer.renderer().symbol().symbolLayer(0).setStrokeColor(QColor("lightGray"))
+            self.layer.renderer().symbol().symbolLayer(0).setStrokeColor(
+                QColor("lightGray")
+            )
             self.layer.renderer().symbol().symbolLayer(0).setStrokeWidth(0.5)
-            self.layer.renderer().symbol().symbolLayer(0).setBrushStyle(Qt.BrushStyle(Qt.NoBrush))
+            self.layer.renderer().symbol().symbolLayer(0).setBrushStyle(
+                Qt.BrushStyle(Qt.NoBrush)
+            )
             self.layer.setLabeling(label)
             self.layer.setLabelsEnabled(True)
             self.layer.triggerRepaint()
-            self.iface.layerTreeView().refreshLayerSymbology(self.layer.id() )
+            self.iface.layerTreeView().refreshLayerSymbology(self.layer.id())
             self.iface.mapCanvas().refresh()
-            self.ChangePushButtonsIcons('remove')
+            self.ChangePushButtonsIcons("remove")
         # Delete layer if already present
         else:
             layer = [lyr.id() for lyr in layers][0]
             QgsProject.instance().removeMapLayer(layer)
-            self.ChangePushButtonsIcons('add')
+            self.ChangePushButtonsIcons("add")
             self.layer = None
 
         self.RemoveHighlights()
         self.iface.mapCanvas().refresh()
 
     def SearchFlurstueckClicked(self):
-        """ Function to search for the clicked Flurstück """
+        """Function to search for the clicked Flurstück"""
         if not self.dockwidget.isVisible():
             self.first_start = True
             self.run()
         if self.cache_updated is True:
             self.canvas.setMapTool(self.maptool)
 
-# ---------------------------------------------------------------------------- #
-# Table functions                                                              #
-# ---------------------------------------------------------------------------- #
+    # ---------------------------------------------------------------------------- #
+    # Table functions                                                              #
+    # ---------------------------------------------------------------------------- #
 
     def ReadFlurstueckFields(self):
-        """ Function to read out the feature info and create
-         a list with all fields and field values """
+        """Function to read out the feature info and create
+        a list with all fields and field values"""
         if self.layer:
             layer = self.layer
             features = layer.getFeatures()
@@ -1263,7 +1498,7 @@ class FlurstuecksFinderNRW:
             return table
 
     def TableFlurstueckFields(self):
-        """ Previously created list is inserted into a QTableWidget """
+        """Previously created list is inserted into a QTableWidget"""
         if self.layer:
             table = self.ReadFlurstueckFields()
             # If the table was already filled before, reset it
@@ -1277,134 +1512,164 @@ class FlurstuecksFinderNRW:
             # The list items are added to the table in a loop
             for i, j in enumerate(table.items()):
                 self.dockwidget.tbl_flurstueck.setItem(
-                    row_position, i,  QTableWidgetItem(str(j[1])))
+                    row_position, i, QTableWidgetItem(str(j[1]))
+                )
             # Vertical 'headers' that use the key values of the dictionary
-            self.dockwidget.tbl_flurstueck.setVerticalHeaderLabels(
-                table.keys())
+            self.dockwidget.tbl_flurstueck.setVerticalHeaderLabels(table.keys())
             # Column width
             self.dockwidget.tbl_flurstueck.horizontalHeader().setSectionResizeMode(
-                QHeaderView.ResizeToContents)
-            self.dockwidget.tbl_flurstueck.horizontalHeader().setSectionResizeMode(0,QHeaderView.Stretch)
+                QHeaderView.ResizeToContents
+            )
+            self.dockwidget.tbl_flurstueck.horizontalHeader().setSectionResizeMode(
+                0, QHeaderView.Stretch
+            )
 
     def CopyTableCell(self):
-        """ Function is called when a cell has been right-clicked on """
+        """Function is called when a cell has been right-clicked on"""
         idx = self.dockwidget.tbl_flurstueck.currentRow()
         clipboard = QApplication.clipboard()
         txt = self.dockwidget.tbl_flurstueck.item(idx, 0).text()
         clipboard.setText(txt)
-        self.PushMessage(message=f'Der Wert {str(txt)} wurde in die Zwischenablage gespeichert', level=Qgis.Info)
+        self.PushMessage(
+            message=f"Der Wert {str(txt)} wurde in die Zwischenablage gespeichert",
+            level=Qgis.Info,
+        )
 
-# ---------------------------------------------------------------------------- #
-# Functions that access external services (JOSM,Geoportal)                     #
-# ---------------------------------------------------------------------------- #
+    # ---------------------------------------------------------------------------- #
+    # Functions that access external services (JOSM,Geoportal)                     #
+    # ---------------------------------------------------------------------------- #
 
     def OpenBrowser(self, browser):
-        """ Opens JOSM with the coordinates of the Flurstück """
+        """Opens JOSM with the coordinates of the Flurstück"""
         if not self.layer:
             if len(self.dockwidget.txt_alkis_id.text()) != 0:
-                self.SearchFlurstueck('alkisid', None)
+                self.SearchFlurstueck("alkisid", None)
             elif len(self.dockwidget.txt_gemarkung_flur_flurstueck.text()) != 0:
-                self.SearchFlurstueck('flstkennz', None)
+                self.SearchFlurstueck("flstkennz", None)
             elif len(self.dockwidget.text_flstkennzlang.text()) != 0:
-                self.SearchFlurstueck('flstkennzlang', None)
+                self.SearchFlurstueck("flstkennzlang", None)
         if self.layer:
             extent = self.extent
             geom = self.geom
             x, y = geom.centroid().asPoint().x(), geom.centroid().asPoint().y()
-            x_poi, y_poi = geom.poleOfInaccessibility(1)[0].asPoint().x(), geom.poleOfInaccessibility(1)[0].asPoint().y()
-            src_crs = QgsCoordinateReferenceSystem.fromOgcWmsCrs(self.layer.crs().authid())
-            if browser == 'josm':
+            x_poi, y_poi = (
+                geom.poleOfInaccessibility(1)[0].asPoint().x(),
+                geom.poleOfInaccessibility(1)[0].asPoint().y(),
+            )
+            src_crs = QgsCoordinateReferenceSystem.fromOgcWmsCrs(
+                self.layer.crs().authid()
+            )
+            if browser == "josm":
                 dest_crs = QgsCoordinateReferenceSystem.fromEpsgId(4326)
                 # If the CRS of the layer is not in WGS84 a transformation is performed
                 if src_crs != dest_crs:
                     transform = QgsCoordinateTransform(
-                        src_crs, dest_crs, QgsProject.instance())
+                        src_crs, dest_crs, QgsProject.instance()
+                    )
                     extent = transform.transform(extent)
-                xmin, xmax, ymin, ymax = extent.xMinimum(
-                ), extent.xMaximum(), extent.yMinimum(), extent.yMaximum()
+                xmin, xmax, ymin, ymax = (
+                    extent.xMinimum(),
+                    extent.xMaximum(),
+                    extent.yMinimum(),
+                    extent.yMaximum(),
+                )
                 StartJosm(self).openJosmApp(xmin, xmax, ymin, ymax)
-            elif browser == 'id':
+            elif browser == "id":
                 dest_crs = QgsCoordinateReferenceSystem.fromEpsgId(4326)
                 # If the CRS of the layer is not in WGS84 a transformation is performed
                 if src_crs != dest_crs:
                     transform = QgsCoordinateTransform(
-                        src_crs, dest_crs, QgsProject.instance())
+                        src_crs, dest_crs, QgsProject.instance()
+                    )
                     x, y = transform.transform(x, y)
-                url = f'https://www.openstreetmap.org/edit?editor=id#map=19/{y}/{x}'
+                url = f"https://www.openstreetmap.org/edit?editor=id#map=19/{y}/{x}"
                 webbrowser.open_new_tab(url)
-            elif browser == 'portal':
+            elif browser == "portal":
                 dest_crs = QgsCoordinateReferenceSystem.fromEpsgId(25832)
                 # If the CRS of the layer is not in ETRS89 / UTM zone 32N a transformation is performed
                 if src_crs != dest_crs:
                     transform = QgsCoordinateTransform(
-                        src_crs, dest_crs, QgsProject.instance())
+                        src_crs, dest_crs, QgsProject.instance()
+                    )
                     x, y = transform.transform(x, y)
                     x_poi, y_poi = transform.transform(x_poi, y_poi)
                     extent = transform.transform(extent)
-                xmin, xmax, ymin, ymax = extent.xMinimum(
-                ), extent.xMaximum(), extent.yMinimum(), extent.yMaximum()
+                xmin, xmax, ymin, ymax = (
+                    extent.xMinimum(),
+                    extent.xMaximum(),
+                    extent.yMinimum(),
+                    extent.yMaximum(),
+                )
                 if self.nrw is False:
-                    url = 'https://geoportal-niederrhein.de/Verband/?'
+                    url = "https://geoportal-niederrhein.de/Verband/?"
                     param = {
-                        'layerIDs': '21001,21002,200370,20070,20071,29105flu,29105,29106flu,29106,29107flu,29107,29108flu,29108',
-                        'visibility': 'true,true,true,true,true,true,true,true,true,true,true,true,true',
-                        'transparency': '0,0,0,0,0,0,0,0,0,0,0,0,0',
-                        'marker': f'{x_poi},{y_poi}',
-                        'zoomToExtent': f'{xmin},{ymin},{xmax},{ymax}'
-                        }
+                        "layerIDs": "21001,21002,200370,20070,20071,29105flu,29105,29106flu,29106,29107flu,29107,29108flu,29108",
+                        "visibility": "true,true,true,true,true,true,true,true,true,true,true,true,true",
+                        "transparency": "0,0,0,0,0,0,0,0,0,0,0,0,0",
+                        "marker": f"{x_poi},{y_poi}",
+                        "zoomToExtent": f"{xmin},{ymin},{xmax},{ymax}",
+                    }
                 else:
-                    url = 'https://www.tim-online.nrw.de/tim-online2/?'
-                    param = {'bg': 'alkis',
-                             'center': f'{x_poi},{y_poi}',
-                             'icon': 'true',
-                             'scale': int(self.canvas.scale())
-                             }
+                    url = "https://www.tim-online.nrw.de/tim-online2/?"
+                    param = {
+                        "bg": "alkis",
+                        "center": f"{x_poi},{y_poi}",
+                        "icon": "true",
+                        "scale": int(self.canvas.scale()),
+                    }
                 url = url + urllib.parse.unquote_plus(urllib.parse.urlencode(param))
                 webbrowser.open_new_tab(url)
 
-# ---------------------------------------------------------------------------- #
-# Update Cache                                                                 #
-# ---------------------------------------------------------------------------- #
+    # ---------------------------------------------------------------------------- #
+    # Update Cache                                                                 #
+    # ---------------------------------------------------------------------------- #
 
     def CheckCache(self):
-        """ Checks if an internet connection is available and if the github file
-        has been changed  """
-        url_md5 = 'https://kreis-viersen.github.io/katasteraemter-gemarkungen-fluren-nrw/data/katasteraemter-gemarkungen-fluren-nrw.json.md5'
-        url_json = 'https://kreis-viersen.github.io/katasteraemter-gemarkungen-fluren-nrw/data/katasteraemter-gemarkungen-fluren-nrw.json'
-        masterfile = os.path.join(self.cache_dir, 'katasteraemter-gemarkungen-fluren-nrw.json')
+        """Checks if an internet connection is available and if the github file
+        has been changed"""
+        url_md5 = "https://kreis-viersen.github.io/katasteraemter-gemarkungen-fluren-nrw/data/katasteraemter-gemarkungen-fluren-nrw.json.md5"
+        url_json = "https://kreis-viersen.github.io/katasteraemter-gemarkungen-fluren-nrw/data/katasteraemter-gemarkungen-fluren-nrw.json"
+        masterfile = os.path.join(
+            self.cache_dir, "katasteraemter-gemarkungen-fluren-nrw.json"
+        )
         request = QgsBlockingNetworkRequest()
-        request.get(QNetworkRequest(QUrl(url_md5)),True)
+        request.get(QNetworkRequest(QUrl(url_md5)), True)
         reply = request.reply()
-        response_md5 = str(reply.content(), 'utf-8')
+        response_md5 = str(reply.content(), "utf-8")
         hash_md5 = None
         hash_json = None
         if reply.attribute(QNetworkRequest.HttpStatusCodeAttribute) == 200:
             hash_md5 = response_md5.split(" ")[0]
             if os.path.isfile(masterfile):
-                with open(masterfile,'rb') as file:
+                with open(masterfile, "rb") as file:
                     hash_json = hashlib.md5(file.read()).hexdigest()
             if not os.path.isfile(masterfile) or (hash_json != hash_md5):
-                request.get(QNetworkRequest(QUrl(url_json)),True)
+                request.get(QNetworkRequest(QUrl(url_json)), True)
                 reply = request.reply()
                 response_json = reply.content()
-                with open(masterfile, 'wb') as json_file:
+                with open(masterfile, "wb") as json_file:
                     json_file.write(response_json)
-                self.PushMessage(message='Daten vom Flurstücksfinder NRW aktualisiert.', level=Qgis.Info)
-            with open(masterfile, encoding='UTF-8') as json_file:
+                self.PushMessage(
+                    message="Daten vom Flurstücksfinder NRW aktualisiert.",
+                    level=Qgis.Info,
+                )
+            with open(masterfile, encoding="UTF-8") as json_file:
                 self.katasterdaten = json.load(json_file)
             self.cache_updated = True
             return True
         else:
             mb = self.ShowMessage(
-                'Fehler', 'Konnte Daten vom Flurstücksfinder NRW nicht aktualisieren!')
-            mb.setDetailedText('Es konnte keine Verbindung zu\n\nhttps://kreis-viersen.github.io/katasteraemter-gemarkungen-fluren-nrw/data/katasteraemter-gemarkungen-fluren-nrw.json.md5\n\nhergestellt werden.\n\nBitte Netzwerkverbindung und ggf. Proxy-Einstellungen überprüfen.')
+                "Fehler", "Konnte Daten vom Flurstücksfinder NRW nicht aktualisieren!"
+            )
+            mb.setDetailedText(
+                "Es konnte keine Verbindung zu\n\nhttps://kreis-viersen.github.io/katasteraemter-gemarkungen-fluren-nrw/data/katasteraemter-gemarkungen-fluren-nrw.json.md5\n\nhergestellt werden.\n\nBitte Netzwerkverbindung und ggf. Proxy-Einstellungen überprüfen."
+            )
             mb.exec()
 
-
-# ---------------------------------------------------------------------------- #
+    # ---------------------------------------------------------------------------- #
 
     def StartupRoutine(self):
-        """ A function to reset most fields and textboxes """
+        """A function to reset most fields and textboxes"""
         # Initializes the functions of the radiobuttons
         self.InitRadioButtons()
         # Checks the CRS on start
@@ -1416,7 +1681,9 @@ class FlurstuecksFinderNRW:
         if self.nrw is True:
             self.FillComboBoxKatasteramt()
             if self.katasteramt:
-                idx = self.dockwidget.cmb_katasteramt.findText(self.katasteramt, Qt.MatchFixedString)
+                idx = self.dockwidget.cmb_katasteramt.findText(
+                    self.katasteramt, Qt.MatchFixedString
+                )
                 if idx != -1:
                     self.dockwidget.cmb_katasteramt.setCurrentIndex(idx)
                     self.FillComboBoxGemarkung()
@@ -1424,7 +1691,7 @@ class FlurstuecksFinderNRW:
             self.FillComboBoxGemarkung()
 
     def run(self):
-        """ Method to run the plugin """
+        """Method to run the plugin"""
         if not self.pluginIsActive:
             self.pluginIsActive = True
 
@@ -1437,9 +1704,13 @@ class FlurstuecksFinderNRW:
             self.StartupRoutine()
 
     def about(self):
-        aboutString = "Flurstücksfinder NRW<br>QGIS-Plugin zur Suche von Flurstücken in NRW<br>" + \
-        "Author: Kreis Viersen<br>Mail: <a href=\"mailto:open@kreis-viersen.de?subject=Flurst%FCcksfinder%20NRW\">" + \
-        "open@kreis-viersen.de</a><br>" + \
-        "Web: <a href=\"https://github.com/kreis-viersen/flurstuecksfinder-nrw\">" + \
-        "https://github.com/kreis-viersen/flurstuecksfinder-nrw</a>"
-        QMessageBox.information(self.iface.mainWindow(), "Über Flurstücksfinder NRW", aboutString)
+        aboutString = (
+            "Flurstücksfinder NRW<br>QGIS-Plugin zur Suche von Flurstücken in NRW<br>"
+            + 'Author: Kreis Viersen<br>Mail: <a href="mailto:open@kreis-viersen.de?subject=Flurst%FCcksfinder%20NRW">'
+            + "open@kreis-viersen.de</a><br>"
+            + 'Web: <a href="https://github.com/kreis-viersen/flurstuecksfinder-nrw">'
+            + "https://github.com/kreis-viersen/flurstuecksfinder-nrw</a>"
+        )
+        QMessageBox.information(
+            self.iface.mainWindow(), "Über Flurstücksfinder NRW", aboutString
+        )

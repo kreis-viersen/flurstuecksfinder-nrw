@@ -33,4 +33,5 @@ def classFactory(iface):  # pylint: disable=invalid-name
     """
     #
     from .flurstuecks_finder_nrw import FlurstuecksFinderNRW
+
     return FlurstuecksFinderNRW(iface)
