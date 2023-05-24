@@ -171,6 +171,7 @@ class FlurstuecksFinderNRW:
         self.katasteramt = None
         self.katasterdaten = None
         self.cache_updated = False
+        self.wfs_prefix = None
 
         # Reads out the config file and sets the variable area to the current value
         # current value from the Conig file
@@ -622,10 +623,10 @@ class FlurstuecksFinderNRW:
                     wfs_arg = "k"
                 katasteramt = katasteramt.replace("Kreis ", "").replace("Stadt ", "")
                 katasteramt = katasteramt[0:3].lower()
-                wfs_arg = wfs_arg + katasteramt
+                self.wfs_prefix = wfs_arg + katasteramt
                 base_url = (
                     "https://geoservices.krzn.de/security-proxy/"
-                    f"services/wfs_{wfs_arg}_alkis_adv_vereinfacht?"
+                    f"services/wfs_{self.wfs_prefix}_alkis_adv_vereinfacht?"
                 )
         elif self.nrw is True:
             base_url = "https://www.wfs.nrw.de/geobasis/wfs_nw_alkis_vereinfacht?"
@@ -719,7 +720,7 @@ class FlurstuecksFinderNRW:
 
             if filter == "flurstuecke":
                 if self.nrw is False:
-                    param["typename"] = "gis:alkis_adv_flurstueckpkt"
+                    param["typename"] = f"gis:{self.wfs_prefix}_alkis_adv_flurstueckpkt"
                     param["propertyname"] = "FLSTNRZAE,FLSTNRNEN,FLSTKENNZ"
                 else:
                     param["typename"] = "ave:FlurstueckPunkt"
@@ -760,7 +761,7 @@ class FlurstuecksFinderNRW:
             elif filter == "oid":
                 oid = kwargs["id"]
                 if self.nrw is False:
-                    param["typename"] = "gis:alkis_adv_flurstueck"
+                    param["typename"] = f"gis:{self.wfs_prefix}_alkis_adv_flurstueck"
                     param["filter"] = (
                         "<Filter>"
                         "<PropertyIsEqualTo>"
@@ -783,7 +784,7 @@ class FlurstuecksFinderNRW:
             elif filter == "flstkennz":
                 flstkennz = kwargs["id"]
                 if self.nrw is False:
-                    param["typename"] = "gis:alkis_adv_flurstueck"
+                    param["typename"] = f"gis:{self.wfs_prefix}_alkis_adv_flurstueck"
                     param["filter"] = (
                         "<Filter>"
                         "<PropertyIsEqualTo>"
@@ -806,7 +807,7 @@ class FlurstuecksFinderNRW:
             elif filter == "clicked":
                 x, y = kwargs["x"], kwargs["y"]
                 if self.nrw is False:
-                    param["typename"] = "gis:alkis_adv_flurstueck"
+                    param["typename"] = f"gis:{self.wfs_prefix}_alkis_adv_flurstueck"
                     if x and y:
                         param["filter"] = (
                             "<fes:Filter>"
@@ -862,7 +863,7 @@ class FlurstuecksFinderNRW:
         if url is not None:
             if self.nrw is False:
                 fieldnames = ["FLSTNRZAE", "FLSTNRNEN", "FLSTKENNZ"]
-                typename = "gis:alkis_adv_flurstueckpkt"
+                typename = f"gis:{self.wfs_prefix}_alkis_adv_flurstueckpkt"
                 geometry = "GEOMETRY"
             else:
                 fieldnames = ["flstnrzae", "flstnrnen", "flstkennz"]
@@ -1215,7 +1216,7 @@ class FlurstuecksFinderNRW:
                     "LAND",
                     "LANDSCHL",
                 ]
-                typename = "gis:alkis_adv_flurstueck"
+                typename = f"gis:{self.wfs_prefix}_alkis_adv_flurstueck"
                 geometry = "GEOMETRY"
             else:
                 fieldnames = [
