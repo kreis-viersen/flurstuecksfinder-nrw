@@ -647,14 +647,23 @@ class FlurstuecksFinderNRW:
             request.get(QNetworkRequest(QUrl(url)), True)
             reply = request.reply()
             if reply.attribute(QNetworkRequest.HttpStatusCodeAttribute) == 200:
-                tree = etree.parse(BytesIO(reply.content()))
-                root = tree.getroot()
-                nsmap = root.nsmap
-                if None in nsmap.keys():
-                    del nsmap[None]
-                results = root.find(
-                    ".//ows:Parameter[@name='srsName']/ows:AllowedValues", nsmap
-                )
+                try:
+                    tree = etree.parse(BytesIO(reply.content()))
+                    root = tree.getroot()
+                    nsmap = root.nsmap
+                    if None in nsmap.keys():
+                        del nsmap[None]
+                    results = root.find(
+                        ".//ows:Parameter[@name='srsName']/ows:AllowedValues", nsmap
+                    )
+                except:
+                    mb = self.ShowMessage(
+                        "Fehler", "Konnte verfügbare KBS vom WFS nicht ermitteln!"
+                    )
+                    mb.setDetailedText(
+                        "Bitte GetCapabilities-Dokument überprüfen:\n\n" + url
+                    )
+                    mb.exec()
 
                 if results is not None:
                     results = results.getchildren()
