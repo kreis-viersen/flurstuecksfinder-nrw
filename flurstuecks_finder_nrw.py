@@ -1613,9 +1613,9 @@ class FlurstuecksFinderNRW:
                 if self.nrw is False:
                     url = "https://geoportal-niederrhein.de/Verband/?"
                     param = {
-                        "layerIDs": "21001,21002,200370,20070,20071,29105flu,29105,29106flu,29106,29107flu,29107,29108flu,29108",
-                        "visibility": "true,true,true,true,true,true,true,true,true,true,true,true,true",
-                        "transparency": "0,0,0,0,0,0,0,0,0,0,0,0,0",
+                        "layerIDs": "200370,20070,20071,29105,29105flu,29106,29106flu,29107,29107flu,29108,29108flu",
+                        "visibility": "true,true,true,true,true,true,true,true,true,true,true",
+                        "transparency": "0,0,0,0,0,0,0,0,0,0,0",
                         "marker": f"{x_poi},{y_poi}",
                         "zoomToExtent": f"{xmin},{ymin},{xmax},{ymax}",
                     }
