@@ -1615,7 +1615,7 @@ class FlurstuecksFinderNRW:
                     param = {
                         "layerIDs": "200370,29105,29105flu,29106,29106flu,29107,29107flu,29108,29108flu,20070,20071",
                         "visibility": "true,true,true,true,true,true,true,true,true,true,true",
-                        "transparency": "0,0,0,0,0,0,0,0,0,0,0",
+                        "transparency": "0,0,100,0,100,0,100,0,100,0,0",
                         "marker": f"{x_poi},{y_poi}",
                         "zoomToExtent": f"{xmin},{ymin},{xmax},{ymax}",
                     }
