@@ -9,7 +9,7 @@ import xml.etree.cElementTree as ET
 import urllib
 import time
 import warnings
-from PyQt5.QtWidgets import QMessageBox
+from qgis.PyQt.QtWidgets import QMessageBox
 
 warnings.filterwarnings(action="ignore", module="subprocess")
 
@@ -77,10 +77,10 @@ class StartJosm(object):
                         self.parent,
                         "JOSM Remote",
                         message,
-                        QMessageBox.Ok,
-                        QMessageBox.Ok,
+                        QMessageBox.StandardButton.Ok,
+                        QMessageBox.StandardButton.Ok,
                     )
-                    if reply == QMessageBox.Yes:
+                    if reply == QMessageBox.StandardButton.Yes:
                         self.josmVarSet()
                 else:
                     josmVarSet = True
@@ -107,9 +107,9 @@ class StartJosm(object):
                     self.parent,
                     "JOSM Starten",
                     "Soll JOSM jetzt gestartet werden?",
-                    QMessageBox.Yes | QMessageBox.No,
+                    QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
                 )
-                if reply == QMessageBox.Yes:
+                if reply == QMessageBox.StandardButton.Yes:
                     try:
                         if sys.platform.startswith("linux"):
                             param = ["java", "-jar", josm_app_path]
