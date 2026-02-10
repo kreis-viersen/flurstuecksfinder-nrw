@@ -9,6 +9,7 @@ description=Find and display parcels (German State of North Rhine-Westphalia) - 
 version=1.4.3
 author=Kreis Viersen
 email=open@kreis-viersen.de
+supportsQt6=True
 
 about=Remark:
       The plugin uses data which covers only NRW/Germany. That's why the plugin is only available in German language.

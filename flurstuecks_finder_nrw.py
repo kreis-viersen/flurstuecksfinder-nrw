@@ -73,8 +73,8 @@ try:
 
 except (ModuleNotFoundError, ImportError) as module_error:
     error_string = f"[Flurstücksfinder NRW Fehler]: {module_error.args[0]} - Modul kann nicht importiert werden. Bitte überprüfen Sie, ob dieses Python-Modul installiert ist!"
-    QgsMessageLog.logMessage(error_string, "Flurstücksfinder NRW", level=Qgis.Critical)
-    iface.messageBar().pushMessage(error_string, level=Qgis.Critical)
+    QgsMessageLog.logMessage(error_string, "Flurstücksfinder NRW", level=Qgis.MessageLevel.Critical)
+    iface.messageBar().pushMessage(error_string, level=Qgis.MessageLevel.Critical)
     sys.exit(error_string)
 
 # Initialize Qt resources from file resources_rc.py
@@ -206,7 +206,7 @@ class FlurstuecksFinderNRW:
         # Initializes a button in the toolbar as a dropdown menu
         self.toolbar_button = QToolButton()
         self.toolbar_button.setMenu(QMenu())
-        self.toolbar_button.setPopupMode(QToolButton.MenuButtonPopup)
+        self.toolbar_button.setPopupMode(QToolButton.ToolButtonPopupMode.MenuButtonPopup)
         self.menu = self.toolbar_button.menu()
         self.tool_btn_action = self.iface.addToolBarWidget(self.toolbar_button)
 
@@ -225,7 +225,7 @@ class FlurstuecksFinderNRW:
             lambda xy: self.SearchFlurstueck("clicked", xy)
         )
         self.maptool = self.mouse_click
-        self.maptool.setCursor(Qt.WhatsThisCursor)
+        self.maptool.setCursor(Qt.CursorShape.WhatsThisCursor)
         # Variable for the first start of the plugin
         self.first_start = True
 
@@ -320,14 +320,14 @@ class FlurstuecksFinderNRW:
                     re.sub(
                         "[^0-9]", "", self.dockwidget.cmb_gemarkung_name.currentText()
                     ),
-                    Qt.MatchFixedString,
+                    Qt.MatchFlag.MatchFixedString,
                 )
             )
         )
         self.dockwidget.cmb_gemarkung_id.currentIndexChanged.connect(
             lambda: self.dockwidget.cmb_gemarkung_name.setCurrentIndex(
                 self.dockwidget.cmb_gemarkung_name.findText(
-                    self.dockwidget.cmb_gemarkung_id.currentText(), Qt.MatchContains
+                    self.dockwidget.cmb_gemarkung_id.currentText(), Qt.MatchFlag.MatchContains
                 )
             )
         )
@@ -399,7 +399,7 @@ class FlurstuecksFinderNRW:
             )
 
         # QTableWidget custom action when right-clicking with the mouse, calls a function
-        self.dockwidget.tbl_flurstueck.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.dockwidget.tbl_flurstueck.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.dockwidget.tbl_flurstueck.customContextMenuRequested.connect(
             self.CopyTableCell
         )
@@ -431,7 +431,7 @@ class FlurstuecksFinderNRW:
     def KeyPressed(self, key):
         """Perform the search action of Return key is pressed"""
         # Check whether enter or return key is pressed
-        if key in [Qt.Key_Return, Qt.Key_Enter]:
+        if key in [Qt.Key.Key_Return, Qt.Key.Key_Enter]:
             if (
                 len(self.dockwidget.txt_alkis_id.text()) != 0
                 and self.dockwidget.txt_alkis_id.hasFocus()
@@ -456,24 +456,24 @@ class FlurstuecksFinderNRW:
     def ShowMessage(self, art, meldung):
         """Creates a message for the user"""
         mb = QMessageBox()
-        mb.setWindowFlags(Qt.WindowStaysOnTopHint)
+        mb.setWindowFlags(Qt.WindowType.WindowStaysOnTopHint)
         if art == "Frage":
             mb.setWindowTitle("Frage")
-            mb.setIcon(QMessageBox.Question)
+            mb.setIcon(QMessageBox.Icon.Question)
             mb.addButton("Ja", mb.AcceptRole)
             mb.addButton("Nein", mb.RejectRole)
         elif art == "Fehler":
             mb.setWindowTitle("Fehler")
-            mb.setIcon(QMessageBox.Critical)
+            mb.setIcon(QMessageBox.Icon.Critical)
             mb.addButton("OK", mb.AcceptRole)
         elif art == "Warning":
             mb.setWindowTitle("Flurstücksfinder NRW Warnung")
             mb.setText(f"Es ist ein Fehler aufgetreten!\n\n{meldung}")
-            mb.setIcon(QMessageBox.Warning)
+            mb.setIcon(QMessageBox.Icon.Warning)
             mb.addButton("Okay", mb.AcceptRole)
         elif art == "Info":
             mb.setWindowTitle("Flurstücksfinder NRW Info")
-            mb.setIcon(QMessageBox.Information)
+            mb.setIcon(QMessageBox.Icon.Information)
             mb.addButton("Okay", mb.AcceptRole)
         mb.setText(meldung)
         return mb
@@ -646,7 +646,7 @@ class FlurstuecksFinderNRW:
             request = QgsBlockingNetworkRequest()
             request.get(QNetworkRequest(QUrl(url)), True)
             reply = request.reply()
-            if reply.attribute(QNetworkRequest.HttpStatusCodeAttribute) == 200:
+            if reply.attribute(QNetworkRequest.Attribute.HttpStatusCodeAttribute) == 200:
                 try:
                     tree = etree.parse(BytesIO(reply.content()))
                     root = tree.getroot()
@@ -1052,19 +1052,19 @@ class FlurstuecksFinderNRW:
         if gem_id is not None and flur is not None and flst is not None:
             if gem_id != self.dockwidget.cmb_gemarkung_id.currentText():
                 idx1 = self.dockwidget.cmb_gemarkung_id.findText(
-                    gem_id, Qt.MatchFixedString
+                    gem_id, Qt.MatchFlag.MatchFixedString
                 )
                 if idx1 != -1:
                     self.dockwidget.cmb_gemarkung_id.setCurrentIndex(idx1)
 
             if flur != self.dockwidget.cmb_flur_nr.currentText():
-                idx2 = self.dockwidget.cmb_flur_nr.findText(flur, Qt.MatchFixedString)
+                idx2 = self.dockwidget.cmb_flur_nr.findText(flur, Qt.MatchFlag.MatchFixedString)
                 if idx2 != -1:
                     self.dockwidget.cmb_flur_nr.setCurrentIndex(idx2)
 
             if flst != self.dockwidget.cmb_flurstueck.currentText():
                 idx3 = self.dockwidget.cmb_flurstueck.findText(
-                    flst, Qt.MatchFixedString
+                    flst, Qt.MatchFlag.MatchFixedString
                 )
                 if idx3 != -1:
                     self.dockwidget.cmb_flurstueck.blockSignals(True)
@@ -1190,12 +1190,12 @@ class FlurstuecksFinderNRW:
             ):
                 self.PushMessage(
                     message="Es konnte kein Flurstück mit dieser Kennung gefunden werden.",
-                    level=Qgis.Info,
+                    level=Qgis.MessageLevel.Info,
                 )
             elif alkis_id is None and art == "alkisid":
                 self.PushMessage(
                     message="Mit dieser ALKIS-ID konnte kein Flurstück gefunden werden.",
-                    level=Qgis.Info,
+                    level=Qgis.MessageLevel.Info,
                 )
         elif art == "clicked":
             x, y = mouse_click[0], mouse_click[1]
@@ -1290,7 +1290,7 @@ class FlurstuecksFinderNRW:
                         flstkennz_kurz = self.SplitFlurstueck(flstkennz)
                         if self.nrw is True:
                             idx = self.dockwidget.cmb_katasteramt.findText(
-                                katasteramt, Qt.MatchContains
+                                katasteramt, Qt.MatchFlag.MatchContains
                             )
                             if idx != -1:
                                 self.dockwidget.cmb_katasteramt.setCurrentIndex(idx)
@@ -1316,24 +1316,24 @@ class FlurstuecksFinderNRW:
                             self.PushMessage(
                                 message=f"An Koordinate {x} : {y} wurde kein Flurstück gefunden!\n\
                             Möglicherweise suchen Sie außerhalb des WFS-Gebiets.",
-                                level=Qgis.Info,
+                                level=Qgis.MessageLevel.Info,
                             )
                         else:
                             self.PushMessage(
                                 message="Mit dieser Kennung konnte kein Flurstück gefunden werden.",
-                                level=Qgis.Info,
+                                level=Qgis.MessageLevel.Info,
                             )
                 else:
                     if art == "clicked":
                         self.PushMessage(
                             message=f"An Koordinate {x} : {y} wurde kein Flurstück gefunden!\n\
                         Möglicherweise suchen Sie außerhalb des WFS-Gebiets.",
-                            level=Qgis.Info,
+                            level=Qgis.MessageLevel.Info,
                         )
                     else:
                         self.PushMessage(
                             message="Mit dieser Kennung konnte kein Flurstück gefunden werden.",
-                            level=Qgis.Info,
+                            level=Qgis.MessageLevel.Info,
                         )
         return flurstueck_layer
 
@@ -1386,7 +1386,7 @@ class FlurstuecksFinderNRW:
                 FlurstuecksFinderNRW.highlight2.setWidth(3)
             else:
                 self.canvas.flashGeometries(
-                    [self.geom.convertToType(QgsWkbTypes.LineGeometry)],
+                    [self.geom.convertToType(QgsWkbTypes.GeometryType.LineGeometry)],
                     self.layer.crs(),
                     QColor(255, 0, 0, 255),
                     QColor(0, 0, 0, 0),
@@ -1462,7 +1462,7 @@ class FlurstuecksFinderNRW:
             )
             self.layer.renderer().symbol().symbolLayer(0).setStrokeWidth(0.5)
             self.layer.renderer().symbol().symbolLayer(0).setBrushStyle(
-                Qt.BrushStyle(Qt.NoBrush)
+                Qt.BrushStyle(Qt.BrushStyle.NoBrush)
             )
             self.layer.setLabeling(label)
             self.layer.setLabelsEnabled(True)
@@ -1528,10 +1528,10 @@ class FlurstuecksFinderNRW:
             self.dockwidget.tbl_flurstueck.setVerticalHeaderLabels(table.keys())
             # Column width
             self.dockwidget.tbl_flurstueck.horizontalHeader().setSectionResizeMode(
-                QHeaderView.ResizeToContents
+                QHeaderView.ResizeMode.ResizeToContents
             )
             self.dockwidget.tbl_flurstueck.horizontalHeader().setSectionResizeMode(
-                0, QHeaderView.Stretch
+                0, QHeaderView.ResizeMode.Stretch
             )
 
     def CopyTableCell(self):
@@ -1542,7 +1542,7 @@ class FlurstuecksFinderNRW:
         clipboard.setText(txt)
         self.PushMessage(
             message=f"Der Wert {str(txt)} wurde in die Zwischenablage gespeichert",
-            level=Qgis.Info,
+            level=Qgis.MessageLevel.Info,
         )
 
     # ---------------------------------------------------------------------------- #
@@ -1648,7 +1648,7 @@ class FlurstuecksFinderNRW:
         response_md5 = str(reply.content(), "utf-8")
         hash_md5 = None
         hash_json = None
-        if reply.attribute(QNetworkRequest.HttpStatusCodeAttribute) == 200:
+        if reply.attribute(QNetworkRequest.Attribute.HttpStatusCodeAttribute) == 200:
             hash_md5 = response_md5.split(" ")[0]
             if os.path.isfile(masterfile):
                 with open(masterfile, "rb") as file:
@@ -1661,7 +1661,7 @@ class FlurstuecksFinderNRW:
                     json_file.write(response_json)
                 self.PushMessage(
                     message="Daten vom Flurstücksfinder NRW aktualisiert.",
-                    level=Qgis.Info,
+                    level=Qgis.MessageLevel.Info,
                 )
             with open(masterfile, encoding="UTF-8") as json_file:
                 self.katasterdaten = json.load(json_file)
@@ -1692,7 +1692,7 @@ class FlurstuecksFinderNRW:
             self.FillComboBoxKatasteramt()
             if self.katasteramt:
                 idx = self.dockwidget.cmb_katasteramt.findText(
-                    self.katasteramt, Qt.MatchFixedString
+                    self.katasteramt, Qt.MatchFlag.MatchFixedString
                 )
                 if idx != -1:
                     self.dockwidget.cmb_katasteramt.setCurrentIndex(idx)
@@ -1707,7 +1707,7 @@ class FlurstuecksFinderNRW:
 
         self.dockwidget.closingPlugin.connect(self.onClosePlugin)
         if self.CheckCache() is True:
-            self.iface.addDockWidget(Qt.LeftDockWidgetArea, self.dockwidget)
+            self.iface.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.dockwidget)
             if self.first_start is True:
                 self.first_start = False
             self.dockwidget.show()
