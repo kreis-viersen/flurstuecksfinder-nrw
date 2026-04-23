@@ -1652,7 +1652,7 @@ class FlurstuecksFinderNRW:
             hash_md5 = response_md5.split(" ")[0]
             if os.path.isfile(masterfile):
                 with open(masterfile, "rb") as file:
-                    hash_json = hashlib.md5(file.read()).hexdigest()
+                    hash_json = hashlib.md5(file.read(), usedforsecurity=False).hexdigest()
             if not os.path.isfile(masterfile) or (hash_json != hash_md5):
                 request.get(QNetworkRequest(QUrl(url_json)), True)
                 reply = request.reply()
