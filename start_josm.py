@@ -63,7 +63,7 @@ class StartJosm(object):
         josmVarSet = False
         if josm_cfg_path:
             if os.path.isfile(josm_cfg_path):
-                tree = ET.parse(josm_cfg_path)
+                tree = ET.parse(josm_cfg_path) # nosec - trusted local config file, not untrusted XML
                 ET.register_namespace(
                     "", "http://josm.openstreetmap.de/preferences-1.0"
                 )
