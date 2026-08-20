@@ -122,6 +122,11 @@ Diese JSON-Datei wird lokal im Pluginverzeichnis gespeichert. Beim Start des Plu
 
 Die Daten der verwendeten WFS-Dienste und auch die JSON-Datei stehen als OpenData unter der [Datenlizenz Deutschland – Zero – Version 2.0].
 
+### Flurstücksfinder SH
+
+QGIS-Plugin auf der Basis des Flurstücksfinders NRW für Schleswig-Holstein:<br> 
+[Flurstücksfinder SH bei OpenCode]
+
 [GitHub-Issue]: <https://github.com/kreis-viersen/flurstuecksfinder-nrw/issues>
 [open@kreis-viersen.de]: <mailto:open@kreis-viersen.de?subject=Flurst%FCcksfinder%20NRW>
 [QGIS-Plugin-Repository]: <https://plugins.qgis.org/plugins/flurstuecksfinder-nrw/>
@@ -138,3 +143,4 @@ Die Daten der verwendeten WFS-Dienste und auch die JSON-Datei stehen als OpenDat
 [JSON-Datei]: <https://kreis-viersen.github.io/katasteraemter-gemarkungen-fluren-nrw/data/katasteraemter-gemarkungen-fluren-nrw.json>
 [GitHub-Repository zur Aufbereitung und Bereitstellung der Daten]: <https://github.com/kreis-viersen/katasteraemter-gemarkungen-fluren-nrw>
 [Datenlizenz Deutschland – Zero – Version 2.0]: <https://www.govdata.de/dl-de/zero-2-0>
+[Flurstücksfinder SH bei OpenCode]: <https://gitlab.opencode.de/sh/LVermGeo/qgis-plugin/flurstuecksfinder-sh>
