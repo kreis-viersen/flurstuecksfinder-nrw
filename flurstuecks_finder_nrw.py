@@ -44,7 +44,7 @@ try:
     )
     from qgis.gui import QgsHighlight, QgsMapToolEmitPoint
     from qgis.PyQt import uic
-    from qgis.PyQt.QtCore import QCoreApplication, QSize, Qt, QUrl, QVariant, pyqtSignal
+    from qgis.PyQt.QtCore import QCoreApplication, QMetaType, QSize, Qt, QUrl, pyqtSignal
     from qgis.PyQt.QtGui import QColor, QFont, QIcon, QPixmap
     from qgis.PyQt.QtNetwork import QNetworkRequest
     from qgis.PyQt.QtWidgets import (
@@ -880,7 +880,7 @@ class FlurstuecksFinderNRW:
                 geometry = "geometrie"
             fields = QgsFields()
             for fieldname in fieldnames:
-                fields.append(QgsField(fieldname, QVariant.String, "", 100, 0))
+                fields.append(QgsField(fieldname, QMetaType.Type.QString, "", 100, 0))
             gml = None
             gml = QgsGml(typename, geometry, fields)
             wfs_request = gml.getFeaturesUri(url)
@@ -1255,7 +1255,7 @@ class FlurstuecksFinderNRW:
                 fieldlength = 100
                 if fieldname == "LAGEBEZTXT":
                     fieldlength = 1000
-                fields.append(QgsField(fieldname, QVariant.String, "", fieldlength, 0))
+                fields.append(QgsField(fieldname, QMetaType.Type.QString, "", fieldlength, 0))
             gml = None
             gml = QgsGml(typename, geometry, fields)
             wfs_request = gml.getFeaturesUri(url)
