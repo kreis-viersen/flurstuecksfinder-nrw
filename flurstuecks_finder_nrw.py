@@ -44,7 +44,7 @@ try:
     )
     from qgis.gui import QgsHighlight, QgsMapToolEmitPoint
     from qgis.PyQt import uic
-    from qgis.PyQt.QtCore import QCoreApplication, QSize, Qt, QUrl, QVariant, pyqtSignal
+    from qgis.PyQt.QtCore import QCoreApplication, QMetaType, QSize, Qt, QUrl, pyqtSignal
     from qgis.PyQt.QtGui import QColor, QFont, QIcon, QPixmap
     from qgis.PyQt.QtNetwork import QNetworkRequest
     from qgis.PyQt.QtWidgets import (
@@ -84,6 +84,13 @@ from .start_josm import *
 qgis_version = Qgis.QGIS_VERSION.split("-")[0]
 # For future releases to catch version differences
 # QgsMessageLog.logMessage('Nachricht', 'Flurstücksfinder NRW', level=Qgis.Info)
+
+# Checks the QGIS Version and uses QVariant (only needed on QGIS < 3.38)
+if Qgis.QGIS_VERSION_INT >= 33800:
+    STRING_TYPE = QMetaType.Type.QString
+else:
+    from qgis.PyQt.QtCore import QVariant
+    STRING_TYPE = QVariant.String
 
 # ---------------------------------------------------------------------------- #
 # Class to initialize the plugin GUIs                                          #
@@ -880,7 +887,7 @@ class FlurstuecksFinderNRW:
                 geometry = "geometrie"
             fields = QgsFields()
             for fieldname in fieldnames:
-                fields.append(QgsField(fieldname, QVariant.String, "", 100, 0))
+                fields.append(QgsField(fieldname, STRING_TYPE, "", 100, 0))
             gml = None
             gml = QgsGml(typename, geometry, fields)
             wfs_request = gml.getFeaturesUri(url)
@@ -1255,7 +1262,7 @@ class FlurstuecksFinderNRW:
                 fieldlength = 100
                 if fieldname == "LAGEBEZTXT":
                     fieldlength = 1000
-                fields.append(QgsField(fieldname, QVariant.String, "", fieldlength, 0))
+                fields.append(QgsField(fieldname, STRING_TYPE, "", fieldlength, 0))
             gml = None
             gml = QgsGml(typename, geometry, fields)
             wfs_request = gml.getFeaturesUri(url)
