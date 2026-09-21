@@ -5,7 +5,7 @@ import os
 import subprocess
 import socket
 import sys
-import xml.etree.cElementTree as ET
+import xml.etree.cElementTree as ET  # nosec - trusted local JOSM config only
 import urllib
 import time
 import warnings
@@ -115,7 +115,7 @@ class StartJosm(object):
                             param = ["java", "-jar", josm_app_path]
                         elif sys.platform.startswith("win"):
                             param = [josm_app_path]
-                        subprocess.Popen(param)
+                        subprocess.Popen(param) # nosec - only trusted, locally determined JOSM path
                         while self.josmPortOpen() is False:
                             time.sleep(0.1)
                         return True
