@@ -64,4 +64,6 @@ jobs:
                           f"{finding.get('type')}"
                       )
               sys.exit(1)
+          else:
+              print("No secrets detected.")
           PY
