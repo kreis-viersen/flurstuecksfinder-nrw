@@ -37,6 +37,7 @@ jobs:
         run: |
           detect-secrets scan \
             --all-files \
+            --exclude-files '(^|/)\.git/' \
             --exclude-files '(^|/)metadata\.txt$' \
             --exclude-files '(^|/)\.secrets\.baseline$' \
             > /tmp/secrets.json
