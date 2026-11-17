@@ -1269,7 +1269,7 @@ class FlurstuecksFinderNRW:
             parsed_features = gml.featuresMap()
             if wfs_request[0] == 0:
                 flurstueck_layer = QgsVectorLayer(
-                    f"polygon?crs=EPSG:{self.epsg}", "flurstueck_layer", "memory"
+                    f"MultiSurface?crs=EPSG:{self.epsg}", "flurstueck_layer", "memory"
                 )
                 flurstueck_layer_data_prov = flurstueck_layer.dataProvider()
                 flurstueck_layer_data_prov.addAttributes(fields.toList())
