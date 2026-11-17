@@ -7,7 +7,7 @@ name=Flurstücksfinder NRW
 qgisMinimumVersion=3.22
 qgisMaximumVersion=4.99
 description=Find and display parcels (German State of North Rhine-Westphalia) - Flurstücksuche in NRW
-version=1.6.2
+version=1.7.0
 author=Kreis Viersen
 email=open@kreis-viersen.de
 
@@ -25,8 +25,10 @@ repository=https://github.com/kreis-viersen/flurstuecksfinder-nrw
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-changelog=v1.6.2:
-          - berücksichtige Security-Scan
+changelog=v1.7.0:
+          - Verwende MultiSurface für temporären Layer
+          v1.6.2:
+          - Berücksichtige Security-Scan
           v1.6.1:
           - Verwendung von QMetaType ab QGIS 3.38
           v1.6.0:
